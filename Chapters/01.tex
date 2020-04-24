@@ -1,0 +1,106 @@
+\chapter{Introduction}
+
+Computer Vision
+\begin{itemize}
+\item useful in consumer devices (\eg fingerprint login on smartphone)
+\item is used as machine vision in quality control (\eg check that all
+  pixels of a screen work $\rightarrow$ rather easy task, that there
+  are no scratches $\rightarrow$ rather hard task)
+\item makes life-and-death decisions (\eg in autonomous emergency
+  braking, cyclist and pedestrian detection $\rightarrow$ needs
+  extremely high accuracy)
+  \begin{itemize}
+  \item Example procedure: Take last $n$ frames (\eg $n = 11$) and
+    decide based on them wether or not to brake
+  \item Need extremely low false positive rate (do not want to brake
+    if it is not necessary)
+  \item Need low false negative rate
+  \item Need to process the data in real-time, \ie need to process
+    $\sim$ 30 MB input/s
+  \end{itemize}
+\end{itemize}
+Only two hand ful of algorithms are sufficiently efficient, \ie work
+at high scale and will make it into consumer devices. We will
+therefore study these two hand ful of algorithms in-depth. They can
+then be combined in complicated pipelines and we will study some of
+these pipelines (see Table~\ref{tab:ex:tasks}).
+
+\begin{table}[htpb]
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    Input & Output & Task \\
+    \midrule
+    Image & 0/1 & Image classification \\
+    Image & One class per pixel & Semantic/pixel segmentation \\
+    Image & Which pixel belong to which instance & Instance segmentation \\
+    Image & Pose of one or more humans & Pose estimation \\
+    Video & Tracks of all targets & tracking
+  \end{tabular}
+  \caption{Example tasks in computer vision}%
+  \label{tab:ex:tasks}
+\end{table}
+
+
+\section{Linear Filters: Convolution}
+Convolution is useful for
+\begin{itemize}
+\item Smoothing (Not SOTA)
+\item Edge/Blob detection
+\item General: Feature extraction
+\end{itemize}
+Has been mainstay of image analysis since it's very cheap (still
+matters now) and is well-understood.
+
+\subsection*{1D Convolution}
+Consider the mean square estimator for $\{y_i\} \in \R$
+\begin{gather*}
+  \hat{y} = \argmin_y \sum_{i=1}^{n}{(y_i - y)}^2
+\end{gather*}
+\todo{Add the derviations for the different estimator from notes}
+
+Different filters can produce very different results ($\leadsto$
+filter optimazation). This is one instance of \emph{discrete
+  convolution}
+\begin{gather*}
+  \sum_{i=0}^{n-1}f_{l-1}g_i \eqqcolon (f \ast g)_l
+\end{gather*}
+Properties:
+\begin{itemize}
+\item Convolution is \textbf{commutative}: $f \ast g = g ast f$
+\item Convolution is \textbf{associative}:
+  $f \ast g \ast h = f \ast (g \ast h) = (f \ast g) \ast h$
+  \begin{itemize}
+  \item Important in practice, especially for image analysis
+  \end{itemize}
+\item Convolution is distributive
+\end{itemize}
+Important convolution filters include
+\begin{itemize}
+\item $f_i \ge 0$ smoothing
+\item $_i = \delta_{i-2}$ shifting
+\item $f = 1/2(1 \ 0 \ -1)$ central finite difference
+  (differentiation)
+\end{itemize}
+Note: 1D convolution can be written as matrix multiplication with a
+\emph{Töplitz matrix}.  \todo{Write up example}
+
+\subsection*{2D Convolution}
+In early days only small filters were possible (\eg $f$ was 3x3).
+
+Some filters are \textbf{seperable}: $f_{i,j} = a_i \cdot b_j$ and
+this allows for storage reduction (instead of storing the full matrix
+it suffices to store the vectors $a$ and $b$).
+
+Aside: Some filters are not seperable but low rank and using singular
+value decomposition we can find a suitable represantation.
+
+In practice you would use libraries because with the right memory
+layout, clever use of co-processors and GPUs speed can be increased.
+
+There are different options to extrapolate at the boundary of the
+image.
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:

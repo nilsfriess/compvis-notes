@@ -1,0 +1,38 @@
+\documentclass[
+fontsize     = 11pt,%
+paper        = a4,%
+numbers      = noenddot,%
+parskip      = half,
+DIV = calc,%
+BCOR = 5mm,
+headsepline%
+]{scrreprt}
+
+\usepackage[utf8]{inputenc}%
+\usepackage[T1]{fontenc}
+
+\include{meta}
+\include{preamble}
+\include{mathsetup}
+
+\pagestyle{scrheadings}
+
+% DRAFT PACKAGES
+\usepackage{showlabels}
+
+\begin{document}
+
+\include{titlepage}
+% \include{abstract}
+
+\cleardoublepage
+\tableofcontents
+\listoftodos
+
+\include{Chapters/01}
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
