@@ -1,0 +1,99 @@
+\chapter{Machine Learning primer}
+This overview is based on the
+chapter~\url{https://www.deeplearningbook.org/contents/ml.html}.
+
+\section{Learning Algorithms}
+What does the \emph{learning} mean in machine learning? Popular
+definition is due to Mitchell:
+\begin{quotation}
+  A Computer program is said to learn from experience $E$ with respect
+  to some class of tasks $T$ and performance measure $P$ if its
+  performance at tasks in $T$, as measured by $P$, improves with
+  experience $E$.
+\end{quotation}
+In the following, we give intuitive descriptions and examples of what
+$T$, $P$ and $E$ might be in practice.
+
+\subsection*{The Task $T$}
+Task is not the process of learning itself. Learning is our means of
+attaining the ability to perform the task (Example: If we want the
+robot to walk, walking is the task). Usually, tasks are described in
+terms of how the machine should process an \textbf{example}. An
+example conists of \textbf{features} that have been quantitatively
+measurred from something that we want the machine learning system to
+process. Typically, we represent an example as $\vec{x} \in \R^n$
+where each $x_i$ is another feature (features of images $\hat=$ values
+of the pixels).
+
+Some of the most common ML tasks are
+\begin{itemize}
+\item \textbf{Classification.}\qquad Here, the system is asked to put
+  the input into one of $k$ categories. Typically, this is modelled as
+  a function $f:\R^n \rightarrow \{1,\dots,k\}$. Other variants are
+  possible, where $f$ outputs a probability distribution over the
+  different classes. A popular example is object recognition.
+\item \textbf{Regression.}\qquad Predict a numerical value given some
+  input, \ie output a function $f:\R^n \rightarrow \R$.
+\item \textbf{Transcription.}\qquad Here, the system is asked to
+  observe a relatively unstructred representation of some data and
+  transcribe into textual form (Example: transform photograph of text
+  into sequence of ASCII characters; Speech recognition).
+\item \textbf{Machine translation.}\qquad Convert sequence of symbols
+  from one language into sequence of characters of another language.
+\item \textbf{Structured output.}\qquad Broad category, involving any
+  task that outputs a vector with important relationships between
+  different elements. Examples from above also fall in this category;
+  other examples are formation of sentences that describe what is
+  shown in an image (here the words in the output have the
+  relationship that they must form a correct sentence).
+\item \textbf{Anomaly detection.}\qquad Flag some events or objects
+  from some set as being unusual (example: credit card fraud
+  detection).  \todo{Add the missing tasks (not that important?)}
+\end{itemize}
+These tasks are only examples; many other types of tasks are possible.
+
+\subsection*{The Performance Measure $P$}
+To quantitatively measure the learning process we need to be able to
+evaluate the algorithm's performance. To that end, a performance
+measure is required that is usually specific to the task. For tasks as
+classification we often measure the \textbf{accuracy} of the model (=
+the proportion of examples for which the model produces the correct
+output). Alternatively, we can measure the proportion of examples that
+result in incorrect output (\textbf{error rate}). We often refer to
+the error rate as the expected 0-1 loss (0 if an example is correctly
+classified, 1 if it is not). For continuous examples we need a
+continuous performance metric (\eg, the average log-probability the
+model assigns to some examples). It is often difficult to define a
+performance measure that corresponds well to the desired behavior of
+the system (What should be measured? What if measuring is impractical
+or even intractable? How can alternative criteria be designed?).
+
+We are usually interested in the perfomance of the ML algorithm on
+data it has never seen before; thus the performance is measured on a
+\textbf{test set}. This set is different from the training data.
+
+\subsection*{The Experience $E$}
+ML methods can be broadly categorized as \textbf{unsupervised} and
+\textbf{supervised}. They differ in the kind of experience they are
+allowed to have during the training. Most of the algorithms we
+consider have access to an entire dataset, \ie a collection of many
+examples which themselves consist of features. Sometimes these
+examples are called data points. Examples for supervised learning
+algorithms have additional \textbf{labels} or \textbf{targets}. Note,
+that unsupervised learning and supervised learning are not formally
+defined and the lines between them are often blurred.
+
+A common way of describing a dataset is with a \textbf{design matrix}
+that contains in each of its rows a different example. The columns
+correspond to the features. Of course, this implicitly requires each
+example to be a vector of the same size which is not always possible
+(\eg, photographs with different widths and heights). In these cases,
+design matrices are not the right choice of representation. In the
+case of supervised learning, where each example contains a label or
+target, we work with a design matrix of observations $\mat{X}$ and a
+vector of labels $\vec{y}$, with $y_i$ providing the label for example
+$i$ (Of course, the label can be more than just a single number).
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../main"
+%%% End:
