@@ -19,11 +19,13 @@ Computer Vision
     $\sim$ 30 MB input/s
   \end{itemize}
 \end{itemize}
-Only two hand ful of algorithms are sufficiently efficient, \ie work
-at high scale and will make it into consumer devices. We will
-therefore study these two hand ful of algorithms in-depth. They can
-then be combined in complicated pipelines and we will study some of
-these pipelines (see Table~\ref{tab:ex:tasks}).
+Computer Vision is a compute-intensive endeavor and only two hand ful
+of algorithms are sufficiently efficient, \ie work at high scale and
+will make it into consumer devices. We will therefore study these two
+hand ful of algorithms in-depth. They can then be combined in
+complicated pipelines. Although we will study some of these pipelines
+we will mainly focus on the building blocks (see
+Table~\ref{tab:ex:tasks}).
 
 \begin{table}[htpb]
   \centering
@@ -35,14 +37,14 @@ these pipelines (see Table~\ref{tab:ex:tasks}).
     Image & One class per pixel & Semantic/pixel segmentation \\
     Image & Which pixel belong to which instance & Instance segmentation \\
     Image & Pose of one or more humans & Pose estimation \\
-    Video & Tracks of all targets & tracking
+    Video & Tracks of all targets & tracking \\ \bottomrule
   \end{tabular}
   \caption{Example tasks in computer vision}%
   \label{tab:ex:tasks}
 \end{table}
 
-
-\section{Linear Filters: Convolution}
+\section[Convolution]{Linear Filters: Convolution\footnote{See also
+    Appendix~\ref{chap:appendix:conv}}}
 Convolution is useful for
 \begin{itemize}
 \item Smoothing (Not SOTA)
@@ -57,7 +59,45 @@ Consider the mean square estimator for $\{y_i\} \in \R$
 \begin{gather*}
   \hat{y} = \argmin_y \sum_{i=1}^{n}{(y_i - y)}^2
 \end{gather*}
-\todo{Add the derviations for the different estimator from notes}
+that is given by (can be seen by letting the derivative of the sum
+above be zero)
+\begin{gather*}
+  \hat{y} = \frac{1}{n} \sum_{i=1}^n y_i \,.
+\end{gather*}
+Using the same idea but introducing weights $w_i \ge 0$, \ie
+\begin{gather*}
+  \hat{y}_w = \argmin_y \sum_{i=1}^n w_i (y_i - y)^2
+\end{gather*}
+yields
+\begin{gather*}
+  \hat{y} = \frac{\sum_i w_i y_i}{\sum_i w_i}\,.
+\end{gather*}
+If, in addition, the weights depend on the distance from $x$ only,
+this can be rewritten as (note that this no is a function of $x$)
+\begin{gather*}
+  \hat{y}_w(x) = \argmin_y \sum_{i=1}^n w_i(x - x_i) (y_i - y)^2
+\end{gather*}
+with solution
+\begin{gather*}
+  \hat{y}(x) = \frac{\sum_i w_i(x- x_i) y_i}{\sum_i w_i(x - x_i)}\,
+\end{gather*}
+and in the case of equidistant observations this simplifies to
+\begin{gather*}
+  \hat{y}_l = \frac{1}{\sum_i w_{l-i}}\sum_i w_{l-i} y_i\,,
+\end{gather*}
+which can be interpreted as the convolution of the signal $y$ and a
+weight function $w$. The Figure below demonstrates the results of
+smoothing a perturbed signal using two different weight functions, one
+being a NN kernel (that corresponds to a characteristic function of an
+interval) and one being a Epanechnikov kernel (that corresponds to a
+parabola that has been cut off at its roots).
+
+\begin{figure}[htpb]
+  \centering \includegraphics[width=0.9\textwidth,trim={0 1mm 0
+    0},clip]{Figures/convolution_weight_examples.png}
+  \caption{Box kernel and Epanechnikov kernel}%
+  \label{fig:conv:kernel}
+\end{figure}
 
 Different filters can produce very different results ($\leadsto$
 filter optimazation). This is one instance of \emph{discrete
@@ -67,39 +107,81 @@ filter optimazation). This is one instance of \emph{discrete
 \end{gather*}
 Properties:
 \begin{itemize}
-\item Convolution is \textbf{commutative}: $f \ast g = g ast f$
+\item Convolution is \textbf{commutative}: $f \ast g = g \ast f$
 \item Convolution is \textbf{associative}:
   $f \ast g \ast h = f \ast (g \ast h) = (f \ast g) \ast h$
   \begin{itemize}
   \item Important in practice, especially for image analysis
   \end{itemize}
-\item Convolution is distributive
+\item Convolution is \textbf{distributive}:
+  $f \ast (g + h) = f \ast g + f \ast h$
 \end{itemize}
 Important convolution filters include
 \begin{itemize}
-\item $f_i \ge 0$ smoothing
-\item $_i = \delta_{i-2}$ shifting
-\item $f = 1/2(1 \ 0 \ -1)$ central finite difference
-  (differentiation)
+\item $f_i \ge 0$ smoothing (see above)
+\item $_i = \delta_{i-s}$ shifting
+\item $f = 1/2(1 \ 0 \ -1)$ central finite difference (analogously
+  non-central FD)
+\item $f = [1\quad -1] \ast [1\quad -1] = [1\quad -2\quad 1]$ second
+  derivative\todo{?}
 \end{itemize}
 Note: 1D convolution can be written as matrix multiplication with a
-\emph{Töplitz matrix}.  \todo{Write up example}
+\emph{Töplitz matrix}
+\begin{gather*}
+  \sum_i f_{l-1}g_i \qquad \text{vs.} \qquad \sum_i M_{li}v_i =
+  [M\cdot v]_r
+\end{gather*}
+\todo{What is the $r$ in the sub of matrix mult?}  Example: Consider
+the convolution
+\begin{gather*}
+  [1 \quad 0 \quad -1] \ast [g_0\quad g_1\quad g_2\quad g_3 \quad g_4] \\
+  =
+  \begin{bmatrix}
+    0 & 1 & & & -1 \\
+    -1 & 0 & 1 & & \\
+    & -1 & 0 & 1 & \\
+    & & -1 & 0 & 1 \\
+    1 & & & -1 & 0
+  \end{bmatrix}\cdot
+  \begin{bmatrix}
+    g_0 \\ g_1 \\ g_2 \\ g_3 \\ g_4\,,
+  \end{bmatrix}
+\end{gather*}
+where the terms in the corners arise from periodic boundary conditions
+(\ie the ``$-1$-th'' term is the last term and the ``$n+1$-st'' term
+is the first term).
 
 \subsection*{2D Convolution}
-In early days only small filters were possible (\eg $f$ was 3x3).
+Convolution in higher dimensions can be defined analogously. Here, we
+have
+\begin{gather*}
+  \sum_i \sum_j f_{i,j}g_{u-i,v-j} \eqqcolon (f \ast g)(u,v)\,.
+\end{gather*}
+In image analysis $f$ is often small (\eg 3$\times$3) and $g$ large
+(\eg 3840$\times$2160).
 
-Some filters are \textbf{seperable}: $f_{i,j} = a_i \cdot b_j$ and
-this allows for storage reduction (instead of storing the full matrix
-it suffices to store the vectors $a$ and $b$).
-
-Aside: Some filters are not seperable but low rank and using singular
-value decomposition we can find a suitable represantation.
-
-In practice you would use libraries because with the right memory
-layout, clever use of co-processors and GPUs speed can be increased.
+Some filters are \textbf{seperable} which means they can be written as
+an outer product $f_{i,j} = a_i \cdot b_j$ This allows for storage
+reduction (instead of storing the full matrix it suffices to store the
+vectors $a$ and $b$)\footnote{Aside: Some filters are not seperable
+  but of low rank and using singular value decomposition we can find a
+  suitable represantation such as $f_{i,j} = \sum_{k=1}^r a_i^k b_j^k$
+  with $r$ small.}. In practice you would use libraries because with
+the right memory layout, clever use of co-processors and GPUs the
+speed can be drastically increased. If the filter is separable into
+$a$ and $b$ as above, we can write
+\begin{equation*}
+  \underbrace{
+    \sum_i a_i \underbrace{
+      \sum_j b_j g_{u-i,v-j}
+    }_{\text{1D convolution of rows}}
+  }_{\text{1D convolution of columns}}
+\end{equation*}
 
 There are different options to extrapolate at the boundary of the
 image.
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../main"

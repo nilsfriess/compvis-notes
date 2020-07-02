@@ -3,8 +3,8 @@ fontsize     = 11pt,%
 paper        = a4,%
 numbers      = noenddot,%
 parskip      = half,
-DIV = calc,%
-BCOR = 5mm,
+DIV = 11,%
+%BCOR = 5mm,
 headsepline%
 ]{scrreprt}
 
@@ -14,6 +14,8 @@ headsepline%
 \include{meta}
 \include{preamble}
 \include{mathsetup}
+
+\usepackage[page,toc,titletoc,title]{appendix}
 
 \pagestyle{scrheadings}
 
@@ -30,6 +32,14 @@ headsepline%
 \listoftodos
 
 \include{Chapters/01}
+\include{Chapters/02}
+\include{Chapters/03}
+\include{Chapters/06}
+
+\begin{appendices}
+  \include{Chapters/Appendices/MachineLearning}
+  \include{Chapters/Appendices/Convolution}
+\end{appendices}
 \end{document}
 
 %%% Local Variables:

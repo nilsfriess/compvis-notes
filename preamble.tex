@@ -1,3 +1,4 @@
+
 % \usepackage{newpxtext}
 % \usepackage[euler-digits]{eulervm}
 \usepackage{lmodern}
@@ -16,7 +17,7 @@
 \automark[section]{chapter}
 
 \usepackage[hidelinks]{hyperref}  
-\hypersetup{pdftitle={Rayleigh Quotient Iteration}}
+\hypersetup{pdftitle={Computer Vision: Foundations - Lecture Notes}}
 \hypersetup{pdfauthor={Nils Friess}}
 \hypersetup{colorlinks=false}
 
@@ -29,6 +30,7 @@
 \usepackage{upgreek}
 \usepackage{bm}
 \usepackage{gensymb}
+\usepackage{physics}
 
 % OTHER PACKAGES
 \usepackage{todonotes}
@@ -38,11 +40,15 @@
 \usepackage[labelformat=simple]{subcaption}
 \renewcommand\thesubfigure{(\alph{subfigure})}
 \usepackage{enumitem}
-
+\usepackage{wrapfig}
 % NEW DEFINITIONS AND OTHER SETUP
 \newcommand{\HRule}{\rule{.9\linewidth}{.6pt}}
 
 \addtokomafont{disposition}{\rmfamily}
+
+\usepackage{titlesec}
+\titleformat{\section}{\normalfont\large\bfseries}{Lecture \thesection.}{1em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection.}{1em}{}
 
 %------------------------------------------------------
 %	ABBREVIATIONS
@@ -55,3 +61,4 @@
 %%% mode: latex
 %%% TeX-master: "main" 
 %%% End:
+

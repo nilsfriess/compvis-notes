@@ -1,0 +1,32 @@
+\chapter{Deep Learning}%
+\label{chap:03}
+
+\section{Shallow and Deep Learning}
+Example: Pixel classification/ semantic segmentation. State of the art
+before 2000:
+\begin{enumerate}
+\item Take image
+\item Compute features
+\item Construct decision rule \textbf{by hand} (\eg select foreground
+  and background)
+\item Mark pixels according to decision rule
+\end{enumerate}
+
+State of the art 2000--2012:
+\begin{enumerate}
+\item Take image
+\item Put into filter bank that produced lots of images that summarise
+  local contexts (\ie produce features)
+\item Take all of the images and classify using a shallow classifier
+  (Support vector machine, random forest)
+\end{enumerate}
+The second step is done by the user, \ie the features are selected by
+hand. After 2012: Deep learning.  Take the image and repeatedly apply
+a set of filters + non-liearity (the ``layers''). At the very end use
+a shallow classifier (in NN: perceptron/ logistic regression). The
+layers are trained jointly!
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:

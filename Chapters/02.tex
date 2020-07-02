@@ -1,0 +1,77 @@
+\chapter{Imaging}%
+\label{chap:02}
+\setcounter{section}{1}
+\section{On Downsampling}
+To deal with very large images one often needs to downsample the
+imaage so that it fits into the memory of the GPU. The \emph{wrong}
+appproach would be to take the first pixels, then leave out a fixed
+number, then take the next pixel and repeat.  \todo{Add Example
+  images}
+
+The effect of this na\"\i{}ve approach can be explained as follows.
+Subsampling is a linear operation and can thus be written as a matrix
+multiplication. If we denote by a preceding downwars arrow the signal
+after subsampling, we can write
+\begin{equation*}
+  \downarrow g = h =
+  \begin{bmatrix}
+    1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 1 & 0
+  \end{bmatrix}
+  \cdot
+  \begin{bmatrix}
+    g_0 \\ g_1 \\ \vdots \\ g_7
+  \end{bmatrix}\,.
+\end{equation*}
+Every other sample is completely lost! Idea: Average two adjacent
+samples. This can be written as a convolution of a blur with the
+signal
+\begin{equation*}
+  \downarrow (b \ast g) = h^\prime = \frac{1}{2}
+  \begin{bmatrix}
+    1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 1 & 1 & 0 & 0 \\
+    0 & 0 & 0 & 0 & 0 & 0 & 1 & 1
+  \end{bmatrix}
+  \cdot
+  \begin{bmatrix}
+    g_0 \\ g_1 \\ \vdots \\ g_7
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    \frac{1}{2} g_0 + \frac{1}{2} g_1 \\
+    \frac{1}{2} g_2 + \frac{1}{2} g_3 \\
+    \vdots \\
+    \frac{1}{2} g_6 + \frac{1}{2} g_7
+  \end{bmatrix}\,.
+\end{equation*}
+All observations contribute to the result, \ie less information is
+lost. There are also other approaches. Are there optimal filters?  In
+general, these filters will be data-dependent (this essentially is
+PCA), \ie different filters for different data sets. To obtain a
+generally appllicable filter which is not data-dependent, we need to
+make some assumptions. A typical choice would be to assume the signal
+to be mostly low-pass (such filters will predominantly preserve low
+frequencies). A perfect low-pass filter
+\begin{itemize}
+\item eliminates all frequencies above the new Nyquist limit (highest
+  frequency that can be represented by sampling a signal uniformly),
+  and
+\item leaves frequencies below the Nyquist limit completely untouched.
+\end{itemize}
+The optimal choice is (no proof given)
+\begin{equation*}
+  \text{sinc}\,x = \frac{\sin \pi x}{\pi x}
+\end{equation*}
+\todo{Finish this lecture}
+
+\section{Upsampling/ Interpolating an Image}
+\todo{Finish this lecture}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:
