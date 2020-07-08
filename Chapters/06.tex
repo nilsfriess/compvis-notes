@@ -1,5 +1,4 @@
-\setcounter{chapter}{5}
-\chapter{Shortest Path}%
+\chapter{Shortest Paths}%
 \label{chap:06}
 
 Examples where shortest path algorithms are used in computer vision
@@ -36,7 +35,9 @@ partial problem has to be part of the overall optimal solution.
   $s \rightarrow t$ (red path).
 \end{example*}
 It only makes sense to use dynamic programming if the solutions of the
-subproblems can be re-used multiple times.
+subproblems can be re-used multiple times. In methods where the paths
+are acyclic, the dynamic programming approach grows only linearly with
+the problem size which is the best possible complexity one can expect.
 
 \setcounter{section}{1}
 \section{Shortest path algorithms}%
@@ -76,7 +77,7 @@ obtain a disparity map this is smooth in both the x- and y-direction.
   \centering
   \includegraphics[width=0.9\textwidth]{Figures/scanline_costs}
   \caption{All possible disparities along one scanline}
-\end{figure}     
+\end{figure}
 
 
 \begin{figure}[htpb]

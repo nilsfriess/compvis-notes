@@ -41,14 +41,22 @@
 \renewcommand\thesubfigure{(\alph{subfigure})}
 \usepackage{enumitem}
 \usepackage{wrapfig}
+
+\usepackage{kbordermatrix}
+
+\usepackage{tikz}
+\usepackage{tikzscale}
+\usetikzlibrary{calc}
+\usetikzlibrary{shapes,arrows,chains}
+
+
 % NEW DEFINITIONS AND OTHER SETUP
 \newcommand{\HRule}{\rule{.9\linewidth}{.6pt}}
 
 \addtokomafont{disposition}{\rmfamily}
 
-\usepackage{titlesec}
-\titleformat{\section}{\normalfont\large\bfseries}{Lecture \thesection.}{1em}{}
-\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection.}{1em}{}
+\renewcommand\chapterformat{Week \thechapter\quad}
+\renewcommand\sectionformat{Lecture \thesection\autodot\quad}
 
 %------------------------------------------------------
 %	ABBREVIATIONS

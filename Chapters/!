@@ -1,0 +1,9 @@
+Welcome to the Emacs shell
+
+/mnt/data/Documents/Uni/Bachelor/Semester 7/ComputerVision/compvis-notes/Chapters $ cp 06.tex 07.tex
+/mnt/data/Documents/Uni/Bachelor/Semester 7/ComputerVision/compvis-notes/Chapters $ cp 08.tex 09.tex
+/mnt/data/Documents/Uni/Bachelor/Semester 7/ComputerVision/compvis-notes/Chapters $ ls
+01.aux  02.aux  03.aux  05.tex  06.tex  07.tex   08.aux  08.tex~  09.tex~
+01.tex  02.tex  03.tex  06.aux  07.aux  07.tex~  08.tex  09.tex   Appendices
+/mnt/data/Documents/Uni/Bachelor/Semester 7/ComputerVision/compvis-notes/Chapters $ cp 03.tex 04.tex
+/mnt/data/Documents/Uni/Bachelor/Semester 7/ComputerVision/compvis-notes/Chapters $ 
