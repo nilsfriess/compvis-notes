@@ -463,14 +463,60 @@ semirings, \eg on the sum-product semiring
   f \star g(x) = \sum_y f(x-y) \cdot g(y)\,,
 \end{equation*}
 which results in the ``standard'' convolution that we have seen
-earlier or on the min-sum semiring
+earlier or on the min-sum semiring (also referred to as the
+\emph{tropical semiring})
 \begin{equation*}
   f \star g(x) = \inf_y\left( f(x-y) + g(y)\right)\,,
 \end{equation*}
 which results in the important generalisation of the \emph{infimal} or
-\emph{tropical convolution}.
+\emph{tropical convolution}. In the context of mathematical
+morphology, this operation is often referred to as
+\emph{erosion}\footnote{Analogously, one can define the max-sum
+  convolution which is usually called \emph{dilation}}. The function
+$g$ is then usually called a \emph{structuring element} (SE). In the
+figure below we plotted one row of a grayscale image together with the
+result (light blue line) of the erosion using the strucutral element
+given on the right. As we can see, the erosion computes a lower
+envelope of the signal. We also observe that positive peaks shrink;
+more precisely, peaks that are thinner than the structuring element
+disappear.  (in image analysis, we can for example use this to
+pre-process images to get rid of bright speckles). Valleys and sinks,
+on the other hand, are expanded. If we would apply dilation to the
+same signal (with the structuring element being constant in the
+interval $[-\tau, \tau]$ and zero everywhere else), we would observe
+the opposite effects.
 
+\begin{figure}[htpb]
+  \centering
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{Figures/tropical_convolution}
+    \caption{Erosion applied to one row of a grayscale image.}
+  \end{subfigure}\hspace{3em}%
+  \begin{subfigure}[b]{0.3\textwidth}
+    \includegraphics[width=\textwidth]{Figures/structural_element}
+    \caption{Structural element that was used in the example.}
+  \end{subfigure}%
+  \label{fig:tropconv}%
+  \caption{Example of infimal convolution.}%
+\end{figure}
+\todo{Binary erosion example from lecture? \~Minute 12} One can
+combine erosion and dilation to obtain
+\begin{equation*}
+  \text{opening } \coloneqq \text{ dilation}(\text{erosion}(\text{image},\text{SE}),\text{SE}) 
+\end{equation*}
+and
+\begin{equation*}
+  \text{closing } \coloneqq \text{ erosion}(\text{dilation}(\text{image},\text{SE}),\text{SE})\,,
+\end{equation*}
+where SE stands for structuring element. Since erosion shrinks all
+objects which leads to the elimination of small objects and dilation
+enlarges objects, the opening operation can be used to get rid of very
+small objects in images. Closing, on the other hand, gets rid of small
+holes in objets, since these holes get first ``filled'' by the
+dilation operation after which erosion than shrinks the objects to
+their original size, but keeping the holes ``filled''.
 
+\subsection*{Euclidean distance transform of a binary set}
 
 %%% Local Variables:
 %%% mode: latex
