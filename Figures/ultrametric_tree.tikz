@@ -1,0 +1,42 @@
+\begin{tikzpicture}
+  \node (A) at (0,0) [draw,shape=circle,fill=blue] {};
+  \node (B) at (1,0) [draw,shape=circle,fill=blue] {};
+  \node (C) at (2,0) [draw,shape=circle,fill=blue] {};
+  \node (D) at (3,0) [draw,shape=circle,fill=blue] {};
+  \node (E) at (4,0) [draw,shape=circle,fill=blue] {};
+  \node (F) at (5,0) [draw,shape=circle,fill=blue] {};
+  \node (G) at (6,0) [draw,shape=circle,fill=blue] {};
+  \node (H) at (7,0) [draw,shape=circle,fill=blue] {};
+  \node (I) at (8,0) [draw,shape=circle,fill=blue] {};
+  \node (J) at (9,0) [draw,shape=circle,fill=blue] {};
+
+  \coordinate (ABC) at (B |- 0,2);
+  \draw[magenta,-] (A) -- (ABC);
+  \draw[magenta,-] (B) -- (ABC);
+  \draw[magenta,-] (C) -- (ABC);
+
+  \path let \p1=(I), \p2=(J) in coordinate (IJ) at (0.5*\x1 + 0.5*\x2,1);
+  \draw[red,-] (I) -- (IJ);
+  \draw[red,-] (J) -- (IJ);
+
+  \path let \p1=(ABC), \p2=(D) in coordinate (AD) at (0.5*\x1 + 0.5*\x2,3);
+  \draw[olive,-] (ABC) -- (AD);
+  \draw[olive,-] (D) -- (AD);
+
+  \path let \p1=(IJ), \p2=(H) in coordinate (HI) at (0.5*\x1 + 0.5*\x2,3);
+  \draw[green,-] (IJ) -- (HI);
+  \draw[green,-] (H) -- (HI);
+
+  \path let \p1=(HI), \p2=(G) in coordinate (GH) at (0.5*\x1 + 0.5*\x2,4);
+  \draw[blue,-] (HI) -- (GH);
+  \draw[blue,-] (G) -- (GH);
+
+  \path let \p1=(GH), \p2=(F) in coordinate (FG) at (0.5*\x1 + 0.5*\x2,7);
+  \draw[cyan,-] (GH) -- (FG);
+  \draw[cyan,-] (F) -- (FG);
+
+  \coordinate (DEF) at (E |- 0,8);
+  \draw[violet,-] (AD) -- (DEF);
+  \draw[violet,-] (E) -- (DEF);
+  \draw[violet,-] (FG) -- (DEF);
+\end{tikzpicture}
