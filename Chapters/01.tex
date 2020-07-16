@@ -1,30 +1,32 @@
 \chapter{Introduction}
+\paragraph{Summary} In this chapter, a short introduction to the topic of
+computer vision is given. Thereafter, convolution is introduced. It is discussed
+how (discrete) convolution can be written as a matrix product and the notion of
+separability is discussed.
 
 Computer Vision
 \begin{itemize}
 \item useful in consumer devices (\eg fingerprint login on smartphone)
-\item is used as machine vision in quality control (\eg check that all
-  pixels of a screen work $\rightarrow$ rather easy task, that there
-  are no scratches $\rightarrow$ rather hard task)
-\item makes life-and-death decisions (\eg in autonomous emergency
-  braking, cyclist and pedestrian detection $\rightarrow$ needs
-  extremely high accuracy)
+\item is used as machine vision in quality control (\eg check that all pixels of
+  a screen work $\rightarrow$ rather easy task, that there are no scratches
+  $\rightarrow$ rather hard task)
+\item makes life-and-death decisions (\eg in autonomous emergency braking,
+  cyclist and pedestrian detection $\rightarrow$ needs extremely high accuracy)
   \begin{itemize}
-  \item Example procedure: Take last $n$ frames (\eg $n = 11$) and
-    decide based on them wether or not to brake
-  \item Need extremely low false positive rate (do not want to brake
-    if it is not necessary)
+  \item Example procedure: Take last $n$ frames (\eg $n = 11$) and decide based
+    on them whether or not to brake
+  \item Need extremely low false positive rate (do not want to brake if it is
+    not necessary)
   \item Need low false negative rate
-  \item Need to process the data in real-time, \ie need to process
-    $\sim$ 30 MB input/s
+  \item Need to process the data in real-time, \ie need to process $\sim$ 30 MB
+    input/s
   \end{itemize}
 \end{itemize}
-Computer Vision is a compute-intensive endeavor and only two hand ful
-of algorithms are sufficiently efficient, \ie work at high scale and
-will make it into consumer devices. We will therefore study these two
-hand ful of algorithms in-depth. They can then be combined in
-complicated pipelines. Although we will study some of these pipelines
-we will mainly focus on the building blocks (see
+Computer Vision is a compute-intensive endeavor and only two hand ful of
+algorithms are sufficiently efficient, \ie work at high scale and will make it
+into consumer devices. We will therefore study these two hand ful of algorithms
+in-depth. They can then be combined in complicated pipelines. Although we will
+study some of these pipelines we will mainly focus on the building blocks (see
 Table~\ref{tab:ex:tasks}).
 
 \begin{table}[htpb]
@@ -59,8 +61,8 @@ Consider the mean square estimator for $\{y_i\} \in \R$
 \begin{gather*}
   \hat{y} = \argmin_y \sum_{i=1}^{n}{(y_i - y)}^2
 \end{gather*}
-that is given by (can be seen by letting the derivative of the sum
-above be zero)
+that is given by (can be seen by letting the derivative of the sum above be
+zero)
 \begin{gather*}
   \hat{y} = \frac{1}{n} \sum_{i=1}^n y_i \,.
 \end{gather*}
@@ -72,8 +74,8 @@ yields
 \begin{gather*}
   \hat{y} = \frac{\sum_i w_i y_i}{\sum_i w_i}\,.
 \end{gather*}
-If, in addition, the weights depend on the distance from $x$ only,
-this can be rewritten as (note that this no is a function of $x$)
+If, in addition, the weights depend on the distance from $x$ only, this can be
+rewritten as (note that this no is a function of $x$)
 \begin{gather*}
   \hat{y}_w(x) = \argmin_y \sum_{i=1}^n w_i(x - x_i) (y_i - y)^2
 \end{gather*}
@@ -85,12 +87,12 @@ and in the case of equidistant observations this simplifies to
 \begin{gather*}
   \hat{y}_l = \frac{1}{\sum_i w_{l-i}}\sum_i w_{l-i} y_i\,,
 \end{gather*}
-which can be interpreted as the convolution of the signal $y$ and a
-weight function $w$. The Figure below demonstrates the results of
-smoothing a perturbed signal using two different weight functions, one
-being a NN kernel (that corresponds to a characteristic function of an
-interval) and one being a Epanechnikov kernel (that corresponds to a
-parabola that has been cut off at its roots).
+which can be interpreted as the convolution of the signal $y$ and a weight
+function $w$. The Figure below demonstrates the results of smoothing a perturbed
+signal using two different weight functions, one being a NN kernel (that
+corresponds to a characteristic function of an interval) and one being a
+Epanechnikov kernel (that corresponds to a parabola that has been cut off at its
+roots).
 
 \begin{figure}[htpb]
   \centering \includegraphics[width=0.9\textwidth,trim={0 1mm 0
@@ -99,9 +101,8 @@ parabola that has been cut off at its roots).
   \label{fig:conv:kernel}
 \end{figure}
 
-Different filters can produce very different results ($\leadsto$
-filter optimazation). This is one instance of \emph{discrete
-  convolution}
+Different filters can produce very different results ($\leadsto$ filter
+optimazation). This is one instance of \emph{discrete convolution}
 \begin{gather*}
   \sum_{i=0}^{n-1}f_{l-1}g_i \eqqcolon (f \ast g)_l
 \end{gather*}
@@ -119,20 +120,17 @@ Properties:
 Important convolution filters include
 \begin{itemize}
 \item $f_i \ge 0$ smoothing (see above)
-\item $_i = \delta_{i-s}$ shifting
-\item $f = 1/2(1 \ 0 \ -1)$ central finite difference (analogously
-  non-central FD)
-\item $f = [1\quad -1] \ast [1\quad -1] = [1\quad -2\quad 1]$ second
-  derivative\todo{?}
+\item $f_i = \delta_{i-s}$ shifting
+\item $f = 1/2(1 \ 0 \ -1)$ central finite difference (analogously non-central
+  FD)
+\item $f = [1\quad -1] \ast [1\quad -1] = [1\quad -2\quad 1]$ second derivative
 \end{itemize}
 Note: 1D convolution can be written as matrix multiplication with a
 \emph{Töplitz matrix}
 \begin{gather*}
-  \sum_i f_{l-1}g_i \qquad \text{vs.} \qquad \sum_i M_{li}v_i =
-  [M\cdot v]_r
+  \sum_i f_{l-1}g_i \qquad \text{vs.} \qquad \sum_i M_{li}v_i = [M\cdot v]_r
 \end{gather*}
-\todo{What is the $r$ in the sub of matrix mult?}  Example: Consider
-the convolution
+Example: Consider the convolution
 \begin{gather*}
   [1 \quad 0 \quad -1] \ast [g_0\quad g_1\quad g_2\quad g_3 \quad g_4] \\
   =
@@ -147,9 +145,8 @@ the convolution
     g_0 \\ g_1 \\ g_2 \\ g_3 \\ g_4\,,
   \end{bmatrix}
 \end{gather*}
-where the terms in the corners arise from periodic boundary conditions
-(\ie the ``$-1$-th'' term is the last term and the ``$n+1$-st'' term
-is the first term).
+where the terms in the corners arise from periodic boundary conditions (\ie the
+``$-1$-th'' term is the last term and the ``$n+1$-st'' term is the first term).
 
 \subsection*{2D Convolution}
 Convolution in higher dimensions can be defined analogously. Here, we
