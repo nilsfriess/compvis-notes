@@ -1,30 +1,261 @@
 \chapter{CNNs: Deep Learning}%
 \label{chap:03}
 
+\paragraph{Summary}
+In this chapter, we begin discussing the main part of the lecture: Deep neural
+networks. We start by briefly discussing the developments of deep learning
+within the last 20 years. We then motivate why we are only considering
+convolutional neural networks in this lecture and briefly look at the individual
+parts of a deep net.
+
 \section{Shallow and Deep Learning}
-Example: Pixel classification/ semantic segmentation. State of the art
-before 2000:
+Example: Pixel classification/ semantic segmentation (assign each pixel to one
+of several classes). State of the art before 2000:
 \begin{enumerate}
 \item Take image
 \item Compute features
-\item Construct decision rule \textbf{by hand} (\eg select foreground
-  and background)
+\item Construct decision rule \textbf{by hand} (\eg select foreground and
+  background)
 \item Mark pixels according to decision rule
 \end{enumerate}
 
 State of the art 2000--2012:
 \begin{enumerate}
 \item Take image
-\item Put into filter bank that produced lots of images that summarise
-  local contexts (\ie produce features)
-\item Take all of the images and classify using a shallow classifier
-  (Support vector machine, random forest)
+\item Put into (nonlinear) filter bank that produced lots of images that
+  summarise local contexts (\ie produce features)
+\item Take all of the images and classify using a shallow classifier (Support
+  vector machine, random forest)
 \end{enumerate}
-The second step is done by the user, \ie the features are selected by
-hand. After 2012: Deep learning.  Take the image and repeatedly apply
-a set of filters + non-liearity (the ``layers''). At the very end use
-a shallow classifier (in NN: perceptron/ logistic regression). The
-layers are trained jointly!
+The second step is done by the user, \ie the features are selected by hand. The
+latter part (the classifiers) are learned. After 2012 the advent of deep
+learning began. Take the image and repeatedly apply a set of filters and certain
+``non-linearities'' (the \emph{layers}; essentially the same as the filter banks
+as above). At the very end, a shallow classifier is used (in neural networks
+this would be a perceptron or logistic regression). The layers are learned and
+more importantly they are trained jointly! However, there are many
+hyper-parameters that need to be selected by the user; these are often very
+arbitrary.
+
+The individual building blocks can be interpreted as follows. We have the input
+tensor $X^{l-1}$ that gets mapped to the output tensor $X^l$ by the filters and
+non-linearity $W^l$ (which can also be seen as a tensor) to obtain the resulting
+tensor $X^l$
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \draw (0,0) rectangle (3,4);%
+    \node at (1.5,4.5) {$X^{l-1}$};%
+    \node[text=red] at (-1,2) {$\#$ pixels};%
+    \node[text=red] at (1.5,-0.5) {$K$};
+
+    \node (X1) at (4,2) {};%
+    \node (X2) at (9,2) {};%
+    \node (X3) at (6.5,2) {};%
+
+    \node[above=0.2cm of X3] {filters +};%
+    \node[below=0.2cm of X3] {non-linearity};%
+    \draw[->] (X1) -- (X2);%
+
+    \node at (6.5, 4.5) {$W^l$};
+
+    \draw (10,0) rectangle +(3,4);%
+    \node at (11.5,4.5) {$X^{l}$};%
+  \end{tikzpicture}
+\end{figure}
+where $K$ denotes the number of features. For simplicity, we assume the tensors
+are matrices. We can then write
+\begin{equation*}
+  x^l = \sigma\left( W^l x^{l-1} \right)\,,
+\end{equation*}
+with $x^{l-1}, x^l$ now being vectors. The matrix $W^l$ corresponds to the
+(linear) filter bank and $\sigma$ denotes the non-linear activation function.
+
+How do we choose the linear operator $W^l$?
+\begin{enumerate}
+\item If every component of the output is a linear combination of all input
+  components, the matrix $W^l$ is dense. If we graph this relation as a network
+  connecting the input and output components, the network would be \emph{fully
+    connected}. If the input is an image then this means that every pixel of the
+  output depends on every pixel in the input. Often, \eg for detecting
+  boundaries of cells, it suffices to consider pixels in the vicinity of the
+  pixel we currently try to classify and the rest of the image is not
+  important.\footnote{Similarly, although the sinc theoretically is the perfect
+    low pass filter, it is often not plausible why a pixel that is more than a
+    few hundred pixels away of the current pixel should have an impact on this
+    very pixel (which would be the case with infinitely-supported filters such
+    as the sinc filter).}  Further, this approach is obviously also very
+  computation-intensive since a huge number of parameters (the matrix entries)
+  would need to be learned.
+\item A reasonable simplifying assumption would be to make the decisions rules
+  local, \ie only pixels that are spatially close to the target contribute to
+  the result. $W^l$ would then have band structure.
+\item Finally, if the image consists of similar structures (\eg cells) then
+  there is no need to use a different decision rule in different parts of the
+  image. For instance, when we try to detect boundaries of cells, we want to
+  make the same decision across the whole image. This corresponds to $W^l$ being
+  a convolution (that is reasonably small) which in turn means that $W^l$ is of
+  band Toeplitz structure. A typical choice are $3 \times 3 \times K$
+  convolution filters.
+\end{enumerate}
+Thus, in the following, we will only consider convolutions as the linear
+operations $W^l$. The second ingredient in each layer is the non-linearity.  One
+might first ask why there is the need for a non-linearity at all. A simple
+reason is that if we would have no non-linearities, the network would consists
+of linear functions applied after each other which could be expressed as a
+single linear map and thus we would not gain any benefits from using multiple
+layers (also we could only construct linear functions)\footnote{A more elaborate
+  answer is given by Cover's Function Counting Theorem: The feature space of
+  points we want to classify has to be larger when trying to separate them using
+  a shallow or linear classifier as opposed to using a non-linear classifier
+  such as a deep net.}.
+
+For decades, people were using non-linearities of the following form
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \draw[->] (-5,0) -- (5,0) node[below] {$W^l x^{l-1}_i$};%
+    % \foreach \x in {-4,...,-1,1,2,...,4}%
+    % \draw[shift={(\x,0)}] (0pt,2pt) -- (0pt,-2pt) node[below] {\footnotesize
+    % $\x$};%
+    
+    \draw[->] (0,-2) -- (0,3) node[left] {$\sigma(W^l x^{l-1}_i)$};%
+    % \foreach \y in {-1,1,2,...,2}%
+    % \draw[shift={(0,\y)}] (2pt,0pt) -- (-2pt,0pt) node[left] {\footnotesize
+    % $\y$};%
+    % \node[below left] at (0,0) {\footnotesize $0$};%
+    
+    \draw[domain=-5:5, smooth, variable=\x, blue] plot ({\x}, {4/ (1 +
+      (exp(-\x)))-2});
+  \end{tikzpicture}
+\end{figure}
+
+However, this can sometimes lead to difficulties for the learning algorithm, \eg
+in cases where the value is high (\ie in the above picture the value of
+$W^l x^{l-1}_i$ might lie somewhere on the very right) but the target value
+should actually be low. Since the curve is very flat at high values, it is
+difficult for the learning algorithm to decide what to change. Thus, people
+started using different activation functions and one that turned out to work
+particularly well is the so called ReLU (rectified linear unit)
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \draw[->] (-5,0) -- (5,0) node[below] {$W^l x^{l-1}_i$};%
+    % \foreach \x in {-4,...,-1,1,2,...,4}%
+    % \draw[shift={(\x,0)}] (0pt,2pt) -- (0pt,-2pt) node[below] {\footnotesize
+    % $\x$};%
+    
+    \draw[->] (0,-2) -- (0,3) node[left] {$\sigma(W^l x^{l-1}_i)$};%
+    % \foreach \y in {-1,1,2,...,2}%
+    % \draw[shift={(0,\y)}] (2pt,0pt) -- (-2pt,0pt) node[left] {\footnotesize
+    % $\y$};%
+    % \node[below left] at (0,0) {\footnotesize $0$};%
+    
+    \draw[domain=-5:0, smooth, variable=\x, red] plot ({\x}, {0});
+    \draw[domain=0:3, smooth, variable=\x, red] plot ({\x}, {\x});
+  \end{tikzpicture}
+\end{figure}
+which simply sets negative values to zero and leaves positive values unchanged,
+\ie $\sigma(x) = \max(0,x)$. There exist various variations of this functions
+with different aims, \eg there are variants that ``smoothen'' the curve around
+the origin or some that do not set negative values to zero but assign them a
+(small) negative value etc.
+
+We close this section with a short summary of the advantages of deep neural nets
+over traditional shallow classifiers. Most importantly, neural nets can achieve
+much more accuracy as compared to traditional methods. They do, however, require
+special hardware to be trained (such as GPUs) since the number of parameters is
+typically very large and the underlying optimisation problem is non-convex which
+makes is hard to solve efficiently. But this also leads to the following
+benefit: if you have better hardware, your network will train faster. With
+shallow classifiers this is not the case. Both approaches require much expertise
+but especially with deep networks people are trying to provide simple-to-use
+plug-and-play solutions that can be used by everyone.
+
+\section{Training of a neural network}
+\label{sec:train-neur-netw}
+The training of deep network is easy to write down but is a very hard problem to
+solve efficiently. In essence, a neural network is a non-linear function that we
+try to fit to given data using the input $x_i$ (the $i$th input image) and the
+parameters $W^l$. We can write this as
+\begin{equation*}
+  f(x_i; {\{W^l\}}_{l=1}^L) = \sigma(W^L(\sigma(W^{L-1}\dotsm \sigma(W^2\sigma(W^1 x_i))) \dotsm ))\,.
+\end{equation*}
+Depending on the specific task, $f$ can output a single number (\eg the number
+of pedestrians, the number of cells), a vector of responses, an output image
+(\eg where each pixels is colour-coded to a specific class) etc. At train time
+we are trying to find parameters $W^l$ that make output useful, where useful in
+this context means that the output is in some sense close to a given target. In
+other words, we are trying to find
+\begin{equation*}
+  \argmin_{{\{W^l\}}_{l=1}^L}\ \sum_{t_i \in \mathcal{T}} \loss\left(t_i,\ f(x_i; {\{W^l\}}_{l=1}^L)\right)\,,
+\end{equation*}
+where $t_i$ is the desired \textbf{target}/output for input image $i$ which is
+part of the \textbf{training set} $\mathcal{T}$. The \textbf{loss function}
+measures the discrepancy between the target and the prediction produced by the
+current choice of $f$.
+
+Obviously we have to make certain choices before we can start to train the
+network, which we discuss briefly below.
+\begin{enumerate}
+\item Architecture\qquad Choosing a certain architecture essentially is the task
+  of choosing $f$. As part of this decision, we have to decide on the dimensions
+  of the matrices $W^l$ (this is only one part, there are various other possible
+  decisions, \eg should a layer only depend on the previous layer? Should it
+  depend on the output of the layer before that?). Due to this huge number of
+  possible design choices, it is essentially impossible to know whether or not a
+  certain design decision is optimal. As we have discussed earlier, you are not
+  completely free in your decisions because some are simply not possible due to
+  hardware restrictions (more aspects of the architecture of CNNs are discussed
+  in the next lecture). Another important part which turned out to greatly
+  influence the performance of network is the choice of normalisations
+  (discussed below).
+\item Loss function\qquad There are a few popularly used loss functions (of
+  course there also exists special loss functions for very complicated tasks).
+  For classification, one would typically use a cross-entropy loss. If one class
+  appears much more often than the others, the so called S{\o}rensen-Dice loss
+  is often a more suitable choice. For regression tasks, usually the loss is
+  measured by the sum of squared deviations. It can also be very useful to solve
+  so called \emph{side tasks} simultaneously to solving the main task. This is
+  discussed in more detail below.
+\item Training set\qquad In general, one wants as much training data as one can
+  get. To artificially increase the amount of training data, so called
+  augmentations can be used. Typical approaches in image classification orr
+  semantic segmentation include flipping or cropping the training image (and
+  possibly its corresponding ground truth). Additionally, it can be beneficial
+  to add noise or distort the image.
+\item Optimisation\qquad Modern neural networks often have millions, sometimes
+  billions, of parameters and consequently the goal of finding the optimal set
+  of parameters that minimise the loss is a obviously compute-intensive problem.
+  It is therefore crucial to use an efficient optimisation algorithm. This point
+  is discussed in more detail in the next chapter.
+\end{enumerate}
+
+\subsection*{Side Tasks for Self-Supervision}
+As mentioned above, it can be beneficial to force the network to learn
+additional side tasks.  For instance, suppose we are training a network that
+finds certain things in a video sequence.  A possible side task would be to try
+to predict one frame based on some of the previous frames. If the network is
+able to do this, we could argue that the it actually learned something about the
+structure of the data set. Another popular side task is denoising. Here,
+artificial noise is added to the training image, for example, one might replace
+one pixel of the image by a randomly drawn value. The side task would then be to
+predict the original value of the pixel. Other side tasks include
+\begin{enumerate}
+\item Figuring out rotations and arrangement of patches.
+\item Estimating optical flow in a video (\ie, displacement between frames).
+\item Compression (Auto-Encoding)\qquad Here we ask the network to additionally
+  train an encoder and a decoder. The encoder compresses the input vector, \ie
+  it reduces its dimension while the decoder increases the dimension, \ie it
+  decompresses the smaller vector to the original size. The loss is the
+  difference between the original image and the image after it was encoded and
+  decoded. If this task is solved successfully then the network has found a
+  compact representation of the dataset.
+\end{enumerate}
+Such side tasks can often improve the performance of the network, in particular
+in cases where not much training data is available. Of course ideally we would
+want self-supervising side tasks, \ie side tasks that do not require additional
+ground truth.
 
 %%% Local Variables:
 %%% mode: latex

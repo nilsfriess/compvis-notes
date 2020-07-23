@@ -4,24 +4,25 @@ computer vision is given. Thereafter, convolution is introduced. It is discussed
 how (discrete) convolution can be written as a matrix product and the notion of
 separability is discussed.
 
-Computer Vision
+\section*{Overview}
+Computer Vision is a very broad field with applications in many areas. For
+instance, computer vision is
 \begin{itemize}
-\item useful in consumer devices (\eg fingerprint login on smartphone)
-\item is used as machine vision in quality control (\eg check that all pixels of
-  a screen work $\rightarrow$ rather easy task, that there are no scratches
-  $\rightarrow$ rather hard task)
-\item makes life-and-death decisions (\eg in autonomous emergency braking,
-  cyclist and pedestrian detection $\rightarrow$ needs extremely high accuracy)
-  \begin{itemize}
-  \item Example procedure: Take last $n$ frames (\eg $n = 11$) and decide based
-    on them whether or not to brake
-  \item Need extremely low false positive rate (do not want to brake if it is
-    not necessary)
-  \item Need low false negative rate
-  \item Need to process the data in real-time, \ie need to process $\sim$ 30 MB
-    input/s
-  \end{itemize}
+\item useful in consumer devices (\eg fingerprint login on smartphone);
+\item used as machine vision in quality control (\eg check that all pixels of a
+  screen work which is a rather easy task, or to check that there are no
+  scratches, which is a rather hard task);
+\item making life-and-death decisions (\eg in autonomous emergency braking,
+  cyclist and pedestrian detection. Applications in this area needs extremely
+  high accuracy.
 \end{itemize}
+Considering the last point, an example procedure would be to take last $n$
+frames (\eg $n = 11$) and decide based on them whether or not to brake. Clearly,
+the false positive rate must be extremely low (\ie, do not want to brake if it
+is not necessary). Additionally, we would like a low false negative
+rate. Finally, the process should process the data in real-time which
+corresponds to $\sim$ 30 megabyte of input per second.
+
 Computer Vision is a compute-intensive endeavor and only two hand ful of
 algorithms are sufficiently efficient, \ie work at high scale and will make it
 into consumer devices. We will therefore study these two hand ful of algorithms
