@@ -135,11 +135,46 @@ then combined with the information from the semantic pathway.
 In practice, there are several techniques that should be used to improve the
 performance of the UNet. First, one should definitely use some form of
 normalisation, either group or batch norm (described below). Also, residual
-connections should be used in each of the individual blocks of the UNet.
-\todo{Residual connections}
+connections should be used in each of the individual blocks of the UNet. A
+simple schematic is given in Figure~\ref{fig:resblock}. In addition to the
+output from the previous layer, also the output of the layer before that is fed
+into Layer I. While one could use certain linear transformations to transform
+the skip connection, often the two outputs are simply added to form the new
+input. This is sometimes referred to as a highway network. For more layers
+inside a block, additional connections are added. For instance, in a block of
+four layers, also the output of the second layer would be fed into the fourth.
+Furthermore, one could also add second-order connections, \ie in the example of
+four layers, one could connect the first and fourth layer, skipping two layers
+instead of just one. In practice, these residual connection made it possible to
+train very deep network with 50--100 layers.
+
+\begin{figure}[htpb]
+  \centering
+  \includegraphics[width=0.3\textwidth,angle=90,origin=c]{Figures/resblock}
+  \caption{Residual block with an additional connection from the layer before
+    the previous layer.}%
+  \label{fig:resblock}
+\end{figure}
 
 \subsection*{Batch and Group Normalisation}
+Batch normalisation is a method that normalises activations in a network across
+the current mini-batch. For each feature, batch normalization computes the mean
+and variance of that feature in the mini-batch. It then subtracts the mean and
+divides the feature by its mini-batch standard deviation. After the
+normalisation, the activations have zero mean and unit standard deviation. In
+practice it was observed that batch normalisation has a huge impact on the
+effectiveness of the training of the network. Although there are many
+contributions discussing the actual effect of batch normalisation and explaining
+why it works so well, it is not fully understood.
 
+With very large networks, the size of the mini-batches is often restricted by
+the available GPU memory and in the extreme case of a batch size of one, batch
+normalisation is obviously useless (also, for very small batch sizes batch
+normalisation does not work very well either). There is a variety of other
+normalisation techniques, on more recent one being group normalisation. Here,
+the mean and standard deviation are computed over groups of channels for each
+training example. In particular for cases where batch norm was not applicable,
+group norm has shown to produce very good results.
 
 %%% Local Variables:
 %%% mode: latex
