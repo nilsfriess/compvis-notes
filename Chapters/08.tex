@@ -1,47 +1,43 @@
-\chapter{Widest paths}%
+\chapter{Widest Paths}%
 \label{chap:08}
 
 \setcounter{section}{1}
-\section{Shortest vs.\ widest paths}
-In the ``classical'' shortest path algorithms discussed so far the
-length of a path was given by the \textbf{sum} of the edge weights. In
-this chapter we discuss widest path (bottleneck shortest path/ maximum
-capacity path/ minimax path) methods.  Here, the length of a path is
-given by the \textbf{single largest} (smallest) edge weight.
-\todo{1D example from lecture}
+\section{Shortest vs.\ Widest Paths}
+In the ``classical'' shortest path algorithms discussed so far the length of a
+path was given by the \textbf{sum} of the edge weights. In this chapter we
+discuss widest path (bottleneck shortest path/ maximum capacity path/ minimax
+path) methods.  Here, the length of a path is given by the \textbf{single
+  largest} (smallest) edge weight.  \todo{1D example from lecture}
 
-\section{Minimax paths and Prim's algorithm}
-Recall Disjkstra's Algorithm from a previous lecture. At each
-iteration we do the following: take the node $v$ from the list of
-nodes that have not yet been visited with the smallest distance from
-the starting node. Denote by $e = (v,u)$ the edge from $v$ to $u$.  In
-the ``classical'' Dijkstra algorithm (where we want to compute the
-shortest path from the starting vertex to each of the other nodes) we
-now do the following: For each edge $e(v,u)$, $u$ in the forward-star
-(\ie the set of edges connecting ``outgoing'' nodes) of $v$, update
-the distance to the node $u$ according to
+\section{Minimax Paths and Prim's Algorithm}
+Recall Disjkstra's Algorithm from a previous lecture. At each iteration we do
+the following: take the node $v$ from the list of nodes that have not yet been
+visited with the smallest distance from the starting node. Denote by $e = (v,u)$
+the edge from $v$ to $u$.  In the ``classical'' Dijkstra algorithm (where we
+want to compute the shortest path from the starting vertex to each of the other
+nodes) we now do the following: For each edge $e(v,u)$, $u$ in the forward-star
+(\ie the set of edges connecting ``outgoing'' nodes) of $v$, update the distance
+to the node $u$ according to
 \begin{equation*}
   d(u) = \min\{d(u), d(v) + w(e) \}\,,
 \end{equation*}
-where $w(e)$ is the edge weight of $e$. If we want to compute the
-minimax path, we can still use the same idea; however, we instead
-update $d(u)$ by
+where $w(e)$ is the edge weight of $e$. If we want to compute the minimax path,
+we can still use the same idea; however, we instead update $d(u)$ by
 \begin{equation*}
   d(u) = \min\{d(u), \max\{ d(v), w(e) \}\}\,,
 \end{equation*}
-since we are only interested in the single most expensive edge on the
-way from the starting node to $u$. This change essentially leads to a
-related algorithm, called (eager) Prim's algorithm. Instead of finding
-the shortest path we now build a spanning tree, \ie a minimal tree
-that contains every node of the graph. We see that the shortest path
-problem and the minimax problem are in essence the same problem only
-with different definition of what we mean by the distance between two
-nodes. In other words: both a shortest path problems with a different
-notion of what it means to be short. Algebraic graph theory, which is
-discussed in the next chapter, provides a unified framework to better
-understand this relationship.
+since we are only interested in the single most expensive edge on the way from
+the starting node to $u$. This change essentially leads to a related algorithm,
+called (eager) Prim's algorithm. Instead of finding the shortest path we now
+build a spanning tree, \ie a minimal tree that contains every node of the
+graph. We see that the shortest path problem and the minimax problem are in
+essence the same problem only with different definition of what we mean by the
+distance between two nodes. In other words: both a shortest path problems with a
+different notion of what it means to be short. Algebraic graph theory, which is
+discussed in the next chapter, provides a unified framework to better understand
+this relationship.
 
-\section{All-pairs minimax paths and the minimum spanning tree}
+\section{All-Pairs Minimax Paths and the Minimum Spanning Tree}
 A minimum spanning tree (MST) is a subgraph with the shape of a tree (\ie it
 contains no loops) that is spanning (\ie each node can be reached from any other
 in the subgraph) whose sum of edge weights is minimal. Every edge not in the MST
@@ -73,9 +69,9 @@ $(i,j,k)$ of three vertices $(u,v,w)$ such that
 \begin{equation*}
   d_{ij} \le d_{ik} = d_{kj}\,.
 \end{equation*}
-This, in trurn, implies that a set of points in an ultrametric space can always
+This, in turn, implies that a set of points in an ultrametric space can always
 be represented as leaves in a binary rooted tree that all have the same distance
-from the root (a so called \emph{ultramteric tree}). Consider again the MST from
+from the root (a so called \emph{ultrametric tree}). Consider again the MST from
 Figure~\ref{fig:mst}. We can build the corresponding ultrametric tree as
 follows. Start with the nodes that have the smallest distance, draw them as
 leaves of a tree and connect them to the same parent that is located at the
@@ -116,21 +112,20 @@ ancestor of two nodes is an $\mathcal{O}(1)$ operation.
   \label{fig:ultramteric:tree}
 \end{figure}
 
-\section{Seeded watershed segmenation}
+\section{Seeded Watershed Segmentation}
 \todo{Finish lecture}
-\section{Learned watershed}
+\section{Learned Watershed}
 \todo{Finish lecture}
 
 
 
-% (again, the distance between two nodes can be defined as the sum of
-% all intermediate edges or the maximum edge leading to a shortest
-% path problem and a minimax problem, respectively). This can be
-% achieved with a very similar algorithm which is called Prim's
-% algorithm. In a minimum spanning tree the \textbf{total} cost of all
-% edges is minimial along all trees that contain every node of the
-% graph. This does \textbf{not} guarantee that the path between two
-% nodes is the smallest possible within the graph.
+% (again, the distance between two nodes can be defined as the sum of all
+% intermediate edges or the maximum edge leading to a shortest path problem and
+% a minimax problem, respectively). This can be achieved with a very similar
+% algorithm which is called Prim's algorithm. In a minimum spanning tree the
+% \textbf{total} cost of all edges is minimial along all trees that contain
+% every node of the graph. This does \textbf{not} guarantee that the path
+% between two nodes is the smallest possible within the graph.
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../main"

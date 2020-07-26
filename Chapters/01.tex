@@ -23,9 +23,9 @@ is not necessary). Additionally, we would like a low false negative
 rate. Finally, the process should process the data in real-time which
 corresponds to $\sim$ 30 megabyte of input per second.
 
-Computer Vision is a compute-intensive endeavor and only two hand ful of
+Computer Vision is a compute-intensive endeavour and only two hand full of
 algorithms are sufficiently efficient, \ie work at high scale and will make it
-into consumer devices. We will therefore study these two hand ful of algorithms
+into consumer devices. We will therefore study these two hand full of algorithms
 in-depth. They can then be combined in complicated pipelines. Although we will
 study some of these pipelines we will mainly focus on the building blocks (see
 Table~\ref{tab:ex:tasks}).
@@ -103,7 +103,7 @@ roots).
 \end{figure}
 
 Different filters can produce very different results ($\leadsto$ filter
-optimazation). This is one instance of \emph{discrete convolution}
+optimisation). This is one instance of \emph{discrete convolution}
 \begin{gather*}
   \sum_{i=0}^{n-1}f_{l-1}g_i \eqqcolon (f \ast g)_l
 \end{gather*}
@@ -158,12 +158,12 @@ have
 In image analysis $f$ is often small (\eg 3$\times$3) and $g$ large
 (\eg 3840$\times$2160).
 
-Some filters are \textbf{seperable} which means they can be written as
+Some filters are \textbf{separable} which means they can be written as
 an outer product $f_{i,j} = a_i \cdot b_j$ This allows for storage
 reduction (instead of storing the full matrix it suffices to store the
-vectors $a$ and $b$)\footnote{Aside: Some filters are not seperable
+vectors $a$ and $b$)\footnote{Aside: Some filters are not separable
   but of low rank and using singular value decomposition we can find a
-  suitable represantation such as $f_{i,j} = \sum_{k=1}^r a_i^k b_j^k$
+  suitable representation such as $f_{i,j} = \sum_{k=1}^r a_i^k b_j^k$
   with $r$ small.}. In practice you would use libraries because with
 the right memory layout, clever use of co-processors and GPUs the
 speed can be drastically increased. If the filter is separable into

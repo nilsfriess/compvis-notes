@@ -1,7 +1,5 @@
-\chapter{Sensing, Subsampling and interpolation}%
+\chapter{Sensing, Subsampling and Interpolation}%
 \label{chap:02}
-\setcounter{section}{1}
-
 \paragraph{Summary} This week's lecture is concerned with downsampling and
 upsampling. We show that the na\"\i{}ve approaches should not be used and
 discuss the different alternatives that should be applied. Further, we discuss
@@ -14,7 +12,7 @@ approach is to feed only a small patch of the image into the network. Of course,
 the network then ignores everything outside of this patch, even when we
 ``slide'' the small patch across the image. Another approach that makes use of
 the information across the whole image is to downsample the image. The
-\emph{wrong} appproach would be to take the first pixels, then leave out a fixed
+\emph{wrong} approach would be to take the first pixels, then leave out a fixed
 number, then take the next pixel and repeat (see lecture notebook for an
 example). The correct way would be to first smooth (blur) the image and only
 then subsample.
@@ -77,7 +75,7 @@ We could take more samples around the target sample into account (fewer zero
 entries per the rows) which gives rise to the question of whether or not there
 optimal filters exist? In general, these filters will be data-dependent (this
 essentially is PCA), \ie different filters for different data sets. To obtain a
-generally appllicable filter which is not data-dependent, we need to make some
+generally applicable filter which is not data-dependent, we need to make some
 assumptions. A typical choice would be to assume the signal to be mostly
 low-pass (such filters will predominantly preserve low frequencies; we therefore
 assume the signal mostly consists of low frequencies). A perfect low-pass filter
