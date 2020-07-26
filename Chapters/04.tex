@@ -53,7 +53,8 @@ these are edge detectors and the like).
 After the stack of convolutional layers, three fully connected layers are
 trained. The first two have 4096 channels each, which results in
 $4096 \times 4096$ parameters that need to be trained (which is much more than
-the number of parameters in the convolutional layers).
+the number of parameters in the convolutional layers). At the end of
+Section~\ref{sec:unet} we compute the total number of a CNN in more detail.
 
 The non-linearity used in all of the hidden layers was a rectified linear unit
 (ReLU). The last layer consists of a so called softmax function. The goal of
@@ -92,7 +93,8 @@ larger than 100 (in some contexts only the extreme case of mini-batches
 consisting o a single image is called stochastic gradient descent; sometimes
 also mini-batch gradient descent is referred to as stochastic gradient descent).
 
-\section{Convolutional Neural Networks for Semantic Segmentation}
+\section{Convolutional Neural Networks for Semantic Segmentation}%
+\label{sec:unet}%
 The goal of semantic segmentation is to understand what is in an image on a
 pixel level, \ie to assign a class to each pixel in an image. This is visualised
 in the following image which is taken from the CityScapes dataset.
@@ -126,7 +128,7 @@ $\sim 30 \times 30$ prohibits the network form learning exactly \emph{where}
 these things are (for example in the CityScapes dataset, the network might be
 very certain that somewhere in the left side of the image there is a tram but it
 is unable to exactly pin down its location). This is where the skip connections
-(gray, from left to right) come into play. Although they obviously have not yet
+(grey, from left to right) come into play. Although they obviously have not yet
 understood the difference between, \eg, a tram and a pedestrian, they have
 learned where the boundaries of each of these objects are, as they typically act
 as edge detectors. This information from this so called geometric pathway is
@@ -158,7 +160,7 @@ train very deep network with 50--100 layers.
 
 \subsection*{Batch and Group Normalisation}
 Batch normalisation is a method that normalises activations in a network across
-the current mini-batch. For each feature, batch normalization computes the mean
+the current mini-batch. For each feature, batch normalisation computes the mean
 and variance of that feature in the mini-batch. It then subtracts the mean and
 divides the feature by its mini-batch standard deviation. After the
 normalisation, the activations have zero mean and unit standard deviation. In
@@ -175,6 +177,86 @@ normalisation techniques, on more recent one being group normalisation. Here,
 the mean and standard deviation are computed over groups of channels for each
 training example. In particular for cases where batch norm was not applicable,
 group norm has shown to produce very good results.
+
+\subsection*{Number of Parameters and the Receptive Field of a CNN}
+To finish this chapter we will discuss how the total number of parameters of a
+particular network can be computed and we will also introduce and compute the
+notion of the receptive field. We consider the network given in
+Figure~\ref{fig:cnn_arch}.
+
+\begin{figure}[htpb]
+  \centering \includegraphics[width=0.8\textwidth]{Figures/cnn_arch}
+  \caption{Example of very simple architecture for image classification. The
+    input is an RGB image (three channels) with size $56\times 56$. The numbers
+    of channels are written in red: the number of output classes is 10. For each
+    convolution layer, the dimension of the 2D filter is specified. In the
+    architecture we always use ``same'' convolutions, so that the input is
+    padded with zeros and the convolution output has the same spatial
+    dimension.}%
+  \label{fig:cnn_arch}
+\end{figure}
+
+The only layers that contain learnable parameters are the convolutional layers
+and the fully connected layers. If the filter inside a convolutional layer has
+size $k \times k$ and the filter has $in$ input and $out$ output channels, we
+have a total of $in \cdot k \cdot k \cdot out$ parameters. In a fully connected
+layer, the number of parameters is simply $in \cdot out$. Note, however that in
+this case, the number $in$ depends on how the network has previously altered the
+input size, \eg by max-pool layers. We begin by computing the number of
+parameters for each of the convolutional layers and add them up:
+\begin{equation*}
+  3 \cdot 5 \cdot 5 \cdot 32 + 32 \cdot 3 \cdot 3 \cdot 32 + 32 \cdot 3 \cdot 3 \cdot 64 + 64 \cdot 3 \cdot 3 \cdot 64 + 64 \cdot 3 \cdot 3 \cdot 128\,,
+\end{equation*}
+which yields a total of $140.640$ parameters in the convolutional layers. To
+compute the number of parameters in the fully connected layers, we first have to
+calculate the size of the input at the output of the convolutional part of the
+model, which is indicated with $(\ast)$ in the Figure. Since we are using same
+convolutions, the only layers that alter the size of the input are the
+$2 \times 2$ max-pool layers. Each of these layers reduces the size of the input
+by $2$ along each axis. Since we have two of these layers in the network, the
+input size at $(\ast)$ is $14 \times 14$ since $56 / 2 / 2 = 14$. Since we have
+$128$ input channels, the total number of inputs of the first fully connected
+layer is $14 \cdot 14 \cdot 128 = 25088$ and consequently the number of
+parameters in the first fully connected layer is $25088 \cdot 512$. The number
+of parameters in the second fully connected layer is simply given by
+$512 \cdot 10$, which results in a total of $12.850.176$ parameters. All
+together, the network has
+\begin{equation*}
+  140.640 + 12.850.176 = 12.990.816
+\end{equation*}
+learnable parameters.\footnote{Actually, the number is even slightly higher
+  since we neglected the so called bias terms.} We see that in general, fully
+connected layers involve many more parameters as compared to convolutional ones.
+
+We will now discuss the notion of the receptive field and compute the receptive
+field of the CNN from Figure~\ref{fig:cnn_arch} at the output of the
+convolutional layer, marked with $(\ast)$. The receptive field is defined as
+that part of the input image that a particular feature of the CNN is affected
+by. In a fully connected layer, each neuron is connected to each neuron of the
+previous layer. Consequently, each feature in the input has some influence on
+every feature of the output. With a convolutional layer this is obviously not
+the case. If the convolution filter is of size $3 \times 3$, the output features
+are affected by $9$ of the input features. Now, if we feed this output again
+into another convolutional layer, the convolution operation there will combine
+features that have themselves been computed by different parts of the input
+image. Thus, the receptive field was increased since each output of this layer
+is affected by a larger number of input features than the previous layer.
+
+To compute the receptive field we go through the network starting from the
+location at which we want to compute the receptive field to the first layer.  At
+each layer, we ``update'' the current value. Each convolutional layer with a
+kernel of size $2h+1 \times 2h+1$ will increase the receptive field by $2h$ in
+each direction.  Similarly, each max pool layer with size $2 \times 2$ will
+double the receptive field. We want to know by how many pixels of the input one
+pixel (or a patch of size $1 \times 1$) of the output of layer five is
+affected. Thus we begin with this pixel, adding two for the convolutional layer
+(layer V), multiplying this value by two to account for the max pool, then again
+adding two for layer IV etc. This yields
+\begin{equation*}
+  (((1 + 2) * 2) + 2 + 2)*2 + 2 + 4 = 26\,,
+\end{equation*}
+thus the receptive field is $26 \times 26$ (since all convolutional layers are
+symmetrical).
 
 %%% Local Variables:
 %%% mode: latex
