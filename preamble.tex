@@ -43,6 +43,9 @@
 \usepackage{wrapfig}
 \usepackage{float}
 
+\usepackage{array}
+\newcolumntype{x}[1]{>{\centering\arraybackslash\hspace{0pt}}p{#1}}
+
 \usepackage{kbordermatrix}
 
 \usepackage{tikz}
@@ -51,7 +54,7 @@
 \usetikzlibrary{shapes,arrows,chains}
 \usetikzlibrary{arrows.meta}
 
-
+\newcommand{\tcirc}[1]{\raisebox{.5pt}{\textcircled{\raisebox{-.9pt} {#1}}}}
 
 % NEW DEFINITIONS AND OTHER SETUP
 \newcommand{\HRule}{\rule{.9\linewidth}{.6pt}}

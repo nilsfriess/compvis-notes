@@ -113,19 +113,157 @@ ancestor of two nodes is an $\mathcal{O}(1)$ operation.
 \end{figure}
 
 \section{Seeded Watershed Segmentation}
-\todo{Finish lecture}
-\section{Learned Watershed}
-\todo{Finish lecture}
+The watershed algorithm can be used to segment an image. We begin with a version
+of the algorithm where the user has to provide seeds for, \eg foreground and
+background classes. Consider the example image in Figure~\ref{fig:watershed}
+where we want to partition the image into the two given classes. On the left we
+have the original image which has already been transformed into a graph where
+the edge weights might come from a neural network or some other means. Starting
+from the artificial meta node we compute the minimum spanning tree using Prim's
+algorithm. The result is shown on the right.
 
+\begin{figure}[htpb]
+  \begin{subfigure}[t]{0.5\textwidth}
+    \begin{tikzpicture}[scale=0.8]
+      \node[inner sep=0pt,minimum size=0pt] (B1) at (0,0) {};%
+      \node[inner sep=0pt,minimum size=0pt] (B2) at (6.5,0) {};%
+      \node[inner sep=0pt,minimum size=0pt] (B3) at (9.5,5) {};%
+      \node[inner sep=0pt,minimum size=0pt] (B4) at (3,5) {};%
 
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P1) at (3.5,4.5) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P2) at (5.9,4.5) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P3) at (8.3,4.5) {};%
 
-% (again, the distance between two nodes can be defined as the sum of all
-% intermediate edges or the maximum edge leading to a shortest path problem and
-% a minimax problem, respectively). This can be achieved with a very similar
-% algorithm which is called Prim's algorithm. In a minimum spanning tree the
-% \textbf{total} cost of all edges is minimial along all trees that contain
-% every node of the graph. This does \textbf{not} guarantee that the path
-% between two nodes is the smallest possible within the graph.
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P4) at (2.3,2.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P5) at (4.7,2.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P6) at (7.1,2.6) {};%
+
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P7) at (1,0.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P8) at (3.4,0.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P9) at (5.8,0.6) {};%
+
+      \node[circle,fill=green,inner sep=0pt, minimum size=6pt] (GS) at
+      (2.3,-1.2) {};%
+      \node[circle,fill=blue,inner sep=0pt, minimum size=6pt] (BS) at (7.1,-1.2)
+      {};%
+
+      \node[circle,inner sep=0pt, minimum size=0pt] (GSH) at (2.3,0) {};%
+      \node[circle,inner sep=0pt, minimum size=0pt] (BSH) at (7.1,1) {};%
+
+      \node[circle,inner sep=0pt, minimum size=6pt,fill] (M) at (4.7,-2.4) {};%
+      \node (MT) at (5.5,-2.5) {meta};%
+      \node (ST) at (7.9,-1.3) {seeds};%
+    
+      \draw[-] (B1) -- (B2) -- (B3) -- (B4) -- (B1);%
+
+      \draw[draw=gray] (P1) -- (P2) node[midway,fill=white] {$1$};%
+      \draw[draw=gray] (P2) -- (P3) node[midway,fill=white] {$2$};%
+      \draw[draw=gray] (P4) -- (P5) node[midway,fill=white] {$6$};%
+      \draw[draw=gray] (P5) -- (P6) node[midway,fill=white] {$4$};%
+      \draw[draw=gray] (P7) -- (P8) node[midway,fill=white] {$9$};%
+      \draw[draw=gray] (P8) -- (P9) node[midway,fill=white] {$10$};%
+      \draw[draw=gray] (P1) -- (P4) node[midway,fill=white] {$7$};%
+      \draw[draw=gray] (P2) -- (P5) node[midway,fill=white] {$11$};%
+      \draw[draw=gray] (P3) -- (P6) node[midway,fill=white] {$3$};%
+      \draw[draw=gray] (P4) -- (P7) node[midway,fill=white] {$8$};%
+      \draw[draw=gray] (P5) -- (P8) node[midway,fill=white] {$12$};%
+      \draw[draw=gray] (P6) -- (P9) node[midway,fill=white] {$5$};%
+
+      \draw[green,dotted,thick] (P4) -- (GSH);%
+      \draw[green,thick] (GSH) -- (GS);%
+
+      \draw[blue,dotted,thick] (P6) -- (BSH);%
+      \draw[blue,thick] (BSH) -- (BS);%
+
+      \draw[thick] (GS) -- (M) -- (BS);%
+    \end{tikzpicture}
+    \caption{Original graph}
+  \end{subfigure}%
+  \begin{subfigure}[t]{0.5\textwidth}
+    \begin{tikzpicture}[scale=0.8]
+      \node[inner sep=0pt,minimum size=0pt] (B1) at (0,0) {};%
+      \node[inner sep=0pt,minimum size=0pt] (B2) at (6.5,0) {};%
+      \node[inner sep=0pt,minimum size=0pt] (B3) at (9.5,5) {};%
+      \node[inner sep=0pt,minimum size=0pt] (B4) at (3,5) {};%
+
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P1) at (3.5,4.5) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P2) at (5.9,4.5) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P3) at (8.3,4.5) {};%
+
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P4) at (2.3,2.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P5) at (4.7,2.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P6) at (7.1,2.6) {};%
+
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P7) at (1,0.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P8) at (3.4,0.6) {};%
+      \node[circle,fill,inner sep=0pt, minimum size=6pt] (P9) at (5.8,0.6) {};%
+
+      \node[circle,fill=green,inner sep=0pt, minimum size=6pt] (GS) at
+      (2.3,-1.2) {};%
+      \node[circle,fill=blue,inner sep=0pt, minimum size=6pt] (BS) at (7.1,-1.2)
+      {};%
+
+      \node[circle,inner sep=0pt, minimum size=0pt] (GSH) at (2.3,0) {};%
+      \node[circle,inner sep=0pt, minimum size=0pt] (BSH) at (7.1,1) {};%
+
+      \node[circle,inner sep=0pt, minimum size=6pt,fill] (M) at (4.7,-2.4) {};%
+      \node (MT) at (5.5,-2.5) {meta};%
+      \node (ST) at (7.9,-1.3) {seeds};%
+    
+      \draw[-] (B1) -- (B2) -- (B3) -- (B4) -- (B1);%
+
+      \draw[draw=red,thick] (P1) -- (P2) node[midway,fill=white] {$1$};%
+      \draw[draw=red,thick] (P2) -- (P3) node[midway,fill=white] {$2$};%
+      \draw[draw=gray] (P4) -- (P5) node[midway,fill=white] {$6$};%
+      \draw[draw=red,thick] (P5) -- (P6) node[midway,fill=white] {$4$};%
+      \draw[draw=red,thick] (P7) -- (P8) node[midway,fill=white] {$9$};%
+      \draw[draw=gray] (P8) -- (P9) node[midway,fill=white] {$10$};%
+      \draw[draw=gray] (P1) -- (P4) node[midway,fill=white] {$7$};%
+      \draw[draw=gray] (P2) -- (P5) node[midway,fill=white] {$11$};%
+      \draw[draw=red,thick] (P3) -- (P6) node[midway,fill=white] {$3$};%
+      \draw[draw=red,thick] (P4) -- (P7) node[midway,fill=white] {$8$};%
+      \draw[draw=gray] (P5) -- (P8) node[midway,fill=white] {$12$};%
+      \draw[draw=red,thick] (P6) -- (P9) node[midway,fill=white] {$5$};%
+
+      \draw[red,dotted,thick] (P4) -- (GSH);%
+      \draw[red,thick] (GSH) -- (GS);%
+
+      \draw[red,dotted,thick] (P6) -- (BSH);%
+      \draw[red,thick] (BSH) -- (BS);%
+
+      \draw[thick,red] (GS) -- (M) -- (BS);%
+    \end{tikzpicture}
+    \caption{Graph partitioned into two parts using Prim's algorithm starting
+      from the meta node}
+  \end{subfigure}
+  \caption{Seeded watershed algorithm applied to a simple $3 \times 3$ image.}%
+  \label{fig:watershed}
+\end{figure}
+
+This clearly induces a ``cut'' through the image an we can now assign the upper
+right pixels to the blue class and the lower left pixels to the green class. One
+can also use the same idea without providing seeds manually but instead choosing
+them automatically. In this algorithm which is then simply called
+\emph{watershed segmentation}, the local minima of the image are used as
+seeds. This can be used in practice to find so called ``superpixels'' to
+coarse-grain a computation. These superpixels should lie within one instance in
+the image, but they might not fill the entire image; in other words we coarsened
+the image but still kept the segments separate. On the graph corresponding to
+these superpixels we can then perform seeded watershed algorithm. Also other
+variants of watershed are possible where the seeds are found, for example, by a
+deep learning method.
+
+We have now discussed two different approaches to perform seeded segmentation:
+one using shortest paths and one using minimax paths (watershed) and they can
+behave very differently. In the first variant, \ie when using the sum of edge
+weights as the cost of a path, the costs obviously accumulate over distance and
+thus the proximity of pixels to seed very much matters (\eg very long thin
+segments might not be classified as one segment). Thus, a single seed will not
+take us very far. However, a segment with an incomplete boundary will not easily
+``bleed'' through this boundary which often happens in seeded watershed
+segmentation. When using the maximum of edge weights, the cost of a path depends
+on the single weakest edge and thus, a single seed can give very large segments.
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../main"

@@ -178,6 +178,39 @@ the mean and standard deviation are computed over groups of channels for each
 training example. In particular for cases where batch norm was not applicable,
 group norm has shown to produce very good results.
 
+\subsection*{Performance measures}
+We will now briefly discuss the importance of choosing a meaningful performance
+measure to evaluate the performance of a neural network that is used for
+semantic segmentation. A simply straightforward measure is the \emph{accuracy}
+of the predictions. We simply compare the prediction and the corresponding
+ground truth on a pixel wise basis.  The ratio of correctly classified pixels
+divided by the number of total pixels then gives the accuracy. This, however,
+has one big flaw. Typically, the majority of an image consists of background,
+say 90\% percent, and the remaining 10\% consist of the pixels that we want to
+classify into different classes. If we now simply classify each pixel in our
+prediction as background, we have an accuracy of 90\% although our prediction is
+completely meaningless. Thus, we require a performance measure that incorporates
+the fact that much of the image is background, \ie that specifically ``targets''
+pixels in the foreground class. One that is widely used is the
+\emph{intersection over union} or IoU, for short.
+
+It is based on the following idea. Suppose we have some object that we want to
+recognise in the image, say a cat. Now we use the network to predict the
+location of the cat, \ie we have a certain region of pixels classified as cat.
+If the prediction was perfect, the classified pixels and the corresponding
+ground truth would completely overlap. This is unlikely in practice, but this
+intersection should be maximised. At the same time we want to reduce the false
+positive errors, \ie the pixels classified as cat that do not belong to the cat.
+We of course also want to reduce the false negative errors, \ie the pixels that
+belong to the cat but are not classified as such. Thus, to evaluate how good of
+a prediction that network has made, we divide this intersection by the area of
+cat in the ground truth and in our prediction, \ie the union between both. In
+summary, we compute the ratio between the intersection and the union, or the
+intersection over union. If we know simply classify everything as background,
+the intersection between classified pixels and ground truth is empty and thus
+the IoU score of this prediction would be zero, which much better represents the
+quality of the prediction.
+
 \subsection*{Number of Parameters and the Receptive Field of a CNN}
 To finish this chapter we will discuss how the total number of parameters of a
 particular network can be computed and we will also introduce and compute the
@@ -220,13 +253,10 @@ layer is $14 \cdot 14 \cdot 128 = 25088$ and consequently the number of
 parameters in the first fully connected layer is $25088 \cdot 512$. The number
 of parameters in the second fully connected layer is simply given by
 $512 \cdot 10$, which results in a total of $12.850.176$ parameters. All
-together, the network has
-\begin{equation*}
-  140.640 + 12.850.176 = 12.990.816
-\end{equation*}
-learnable parameters.\footnote{Actually, the number is even slightly higher
-  since we neglected the so called bias terms.} We see that in general, fully
-connected layers involve many more parameters as compared to convolutional ones.
+together, the network has $140.640 + 12.850.176 = 12.990.816$ learnable
+parameters.\footnote{Actually, the number is even slightly higher since we
+  neglected the so called bias terms.} We see that in general, fully connected
+layers involve many more parameters as compared to convolutional ones.
 
 We will now discuss the notion of the receptive field and compute the receptive
 field of the CNN from Figure~\ref{fig:cnn_arch} at the output of the
@@ -242,16 +272,15 @@ features that have themselves been computed by different parts of the input
 image. Thus, the receptive field was increased since each output of this layer
 is affected by a larger number of input features than the previous layer.
 
-To compute the receptive field we go through the network starting from the
-location at which we want to compute the receptive field to the first layer.  At
-each layer, we ``update'' the current value. Each convolutional layer with a
-kernel of size $2h+1 \times 2h+1$ will increase the receptive field by $2h$ in
-each direction.  Similarly, each max pool layer with size $2 \times 2$ will
-double the receptive field. We want to know by how many pixels of the input one
-pixel (or a patch of size $1 \times 1$) of the output of layer five is
-affected. Thus we begin with this pixel, adding two for the convolutional layer
-(layer V), multiplying this value by two to account for the max pool, then again
-adding two for layer IV etc. This yields
+To compute the receptive field we go backwards through the network starting from
+the location at which we want to compute the receptive field. Each convolutional
+layer with a kernel of size $2h+1 \times 2h+1$ will increase the receptive field
+by $2h$ in each direction.  Similarly, each max pool layer with size
+$2 \times 2$ will double the receptive field. We want to know by how many pixels
+of the input one pixel (or a patch of size $1 \times 1$) of the output of layer
+five is affected. Thus we begin with this pixel, adding two for the
+convolutional layer (layer V), multiplying this value by two to account for the
+max pool, then again adding two for layer IV etc. This yields
 \begin{equation*}
   (((1 + 2) * 2) + 2 + 2)*2 + 2 + 4 = 26\,,
 \end{equation*}
