@@ -46,16 +46,15 @@ Table~\ref{tab:ex:tasks}).
   \label{tab:ex:tasks}
 \end{table}
 
-\section[Convolution]{Linear Filters: Convolution\footnote{See also
-    Appendix~\ref{chap:appendix:conv}}}
+\section[Convolution]{Linear Filters: Convolution}
 Convolution is useful for
 \begin{itemize}
 \item Smoothing (Not SOTA)
 \item Edge/Blob detection
 \item General: Feature extraction
 \end{itemize}
-Has been mainstay of image analysis since it's very cheap (still
-matters now) and is well-understood.
+Has been mainstay of image analysis since it's very cheap (still matters now)
+and is well-understood.
 
 \subsection*{1D Convolution}
 Consider the mean square estimator for $\{y_i\} \in \R$
@@ -150,23 +149,21 @@ where the terms in the corners arise from periodic boundary conditions (\ie the
 ``$-1$-th'' term is the last term and the ``$n+1$-st'' term is the first term).
 
 \subsection*{2D Convolution}
-Convolution in higher dimensions can be defined analogously. Here, we
-have
+Convolution in higher dimensions can be defined analogously. Here, we have
 \begin{gather*}
   \sum_i \sum_j f_{i,j}g_{u-i,v-j} \eqqcolon (f \ast g)(u,v)\,.
 \end{gather*}
-In image analysis $f$ is often small (\eg 3$\times$3) and $g$ large
-(\eg 3840$\times$2160).
+In image analysis $f$ is often small (\eg 3$\times$3) and $g$ large (\eg
+3840$\times$2160).
 
-Some filters are \textbf{separable} which means they can be written as
-an outer product $f_{i,j} = a_i \cdot b_j$ This allows for storage
-reduction (instead of storing the full matrix it suffices to store the
-vectors $a$ and $b$)\footnote{Aside: Some filters are not separable
-  but of low rank and using singular value decomposition we can find a
-  suitable representation such as $f_{i,j} = \sum_{k=1}^r a_i^k b_j^k$
-  with $r$ small.}. In practice you would use libraries because with
-the right memory layout, clever use of co-processors and GPUs the
-speed can be drastically increased. If the filter is separable into
+Some filters are \textbf{separable} which means they can be written as an outer
+product $f_{i,j} = a_i \cdot b_j$ This allows for storage reduction (instead of
+storing the full matrix it suffices to store the vectors $a$ and
+$b$)\footnote{Aside: Some filters are not separable but of low rank and using
+  singular value decomposition we can find a suitable representation such as
+  $f_{i,j} = \sum_{k=1}^r a_i^k b_j^k$ with $r$ small.}. In practice you would
+use libraries because with the right memory layout, clever use of co-processors
+and GPUs the speed can be drastically increased. If the filter is separable into
 $a$ and $b$ as above, we can write
 \begin{equation*}
   \underbrace{
@@ -176,8 +173,7 @@ $a$ and $b$ as above, we can write
   }_{\text{1D convolution of columns}}
 \end{equation*}
 
-There are different options to extrapolate at the boundary of the
-image.
+There are different options to extrapolate at the boundary of the image.
 
 
 %%% Local Variables:

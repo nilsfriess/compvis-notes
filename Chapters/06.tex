@@ -1,6 +1,12 @@
 \chapter{Shortest Paths}%
 \label{chap:06}
 
+\paragraph{Summary}
+In this week's lecture the shortest path problem is introduced. We begin by
+discussing examples of shortest path problems in computer vision. Thereafter we
+introduce two algorithms to solve this problem and also discuss one particular
+example on more detail.
+
 \section{Examples}
 Shortest path algorithms are used in different areas in computer vision, in the
 following we briefly discuss two examples. The first example is seeded
@@ -136,7 +142,6 @@ then the graph must not contain any negative edges since this might lead to
 negative cycles which in turn make the notion of shortest path meaningless (the
 shortest path would be given by following the negative cycle infinitely many
 times).
-\todo{Add Pseudocode for Dijkstra}
 
 \section{Scanline Optimisation/ Stereo Disparity Estimation}%
 \label{sec:scanline}
@@ -205,7 +210,7 @@ also the Figure below).
   \caption{State vectors}
 \end{figure}
 
-\section{Segmented Least Squares}
+%\section{Segmented Least Squares}
 
 %%% Local Variables:
 %%% mode: latex

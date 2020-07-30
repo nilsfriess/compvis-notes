@@ -1,5 +1,12 @@
+\setcounter{chapter}{7}
 \chapter{Widest Paths}%
 \label{chap:08}
+
+\paragraph{Summary}
+This chapter is concerned with the widest path problem. We explain its relation
+to the shortest path problem and introduce an algorithm to solve it. We discuss
+the notion of a minimum spanning tree (MST) and examine the Watershed algorithm
+which is based on computing MSTs.
 
 \setcounter{section}{1}
 \section{Shortest vs.\ Widest Paths}
@@ -7,7 +14,7 @@ In the ``classical'' shortest path algorithms discussed so far the length of a
 path was given by the \textbf{sum} of the edge weights. In this chapter we
 discuss widest path (bottleneck shortest path/ maximum capacity path/ minimax
 path) methods.  Here, the length of a path is given by the \textbf{single
-  largest} (smallest) edge weight.  \todo{1D example from lecture}
+  largest} (smallest) edge weight.
 
 \section{Minimax Paths and Prim's Algorithm}
 Recall Disjkstra's Algorithm from a previous lecture. At each iteration we do

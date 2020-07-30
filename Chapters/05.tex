@@ -1,6 +1,11 @@
 \chapter{Instance segmentation}%
 \label{chap:05}
 
+\paragraph{Summary}
+In this Chapter we discuss different techniques to segment different instances
+of the same class in an image. To that end, we introduce the notion of bottom-up
+and top-down methods which are then both discuss an more detail.
+
 \section{Fundamentals}
 We previously discussed semantic segmentation, where we want to assign a class
 to each pixel in an image. If our image contains a group of people then the
@@ -100,14 +105,32 @@ detections below that threshold will not be considered (they are considered as
 being too unlikely).
 
 \section{Hough Transform}
-\todo{Hough transform missing}
+In general, Hough transform is a feature extraction technique; more precisely it
+can be used to find imperfect instances of parameterised objects by a voting
+procedure. This voting procedure is carried out in a parameter space, from which
+object candidates are obtained as local maxima in a so-called accumulator space.
+
+In the simplest case of the Hough transform, the goal is to detect straight
+lines. Since the ``classic'' parametrisation $y = mx + b$ leads to unbounded
+values in the case of vertical lines, one rather uses the form
+$r = x \cos \theta + y \sin \theta$, where $r$ is the distance from the origin
+to the closest point of the straight line, and $\theta$ is the angle between the
+$x$ axis and the line connecting the origin with that closest point (of course
+other parametrisations are also possible). It is now possible to assign to each
+line a pair $(r,\theta)$, or a point in the $(r,\theta)$ plane.
+
+Given a single point in the plane, the set of all straight lines going through
+that point corresponds to a sinusoidal curve in the $(r,\theta)$ plane and this
+curve is unique to this point. A set of two or more points that form a straight
+line will produce sinusoids which cross at the $(r,\theta)$ point that
+parameterises this line.
+
 \section{Similarity Learning}
-\todo{Parts are missing here}%
-We now discuss this approach in more detail. Instead of directly learning
-whether or not to pixels are similar we learn a mapping $e$ from the
-observations (\ie, the image) $X$ into some embedding space $\mathbb{E}$ (\eg,
-$\R^k$). We can then compute the similarity of two pixels $x_1$ and $x_2$ by
-computing their respective distance in the embedding space, \ie we compute
+Instead of directly learning whether or not to pixels are similar we learn a
+mapping $e$ from the observations (\ie, the image) $X$ into some embedding space
+$\mathbb{E}$ (\eg, $\R^k$). We can then compute the similarity of two pixels
+$x_1$ and $x_2$ by computing their respective distance in the embedding space,
+\ie we compute
 \begin{equation*}
   s(x_1,x_2) = s_{\mathbb{E}}(e(x_1),e(x_2)) = s_{\mathbb{E}}(e_1,e_2)\,.
 \end{equation*}
