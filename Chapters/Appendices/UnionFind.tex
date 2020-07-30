@@ -1,0 +1,71 @@
+\renewcommand\chapterformat{\thechapter\quad}
+\chapter{Disjoint-Set/Union-Find Data Structure}
+
+\paragraph{Summary}
+In this chapter we briefly introduce the disjoint-set data structure and discuss
+how it can be used in Kruskal's algorithm to compute minimum spanning trees.
+\\
+
+\noindent The disjoint-set data structure is a data structure that tracks a
+partition of a set of elements. It provides near-constant-time operations to
+\begin{itemize}
+\item add new set,
+\item merge existing sets, and to
+\item determine whether elements are in the same set.
+\end{itemize}
+Since this data structure is often used in the context of graphs, the disjoint
+unions of the partition are often called connected components or simply
+components. We then say two elements are connected if they belong to the same
+component.
+
+Each element in the data structure stores an id, a parent pointer and possibly a
+size or rank value (this is used in certain efficient algorithms). The parent
+pointers are arranged to form one or more trees, each representing a set. If an
+element's parent pointer points nowhere, then the element is the root of a tree
+and becomes the representative member of its set. These \emph{forests} can be
+represented compactly in memory as arrays in which parents are indicated by
+their array index.
+
+To make a new set from an element $x$ a new unique id is created and $x$ is
+added to the disjoint-set tree. Its parent pointer is set to itself, indicating
+that it is the representative member of its own set.
+
+The find operation returns the root of the set in which an element $x$ is
+contained (given it is in one of the sets). To find this root, we simply follow
+the chain of parent pointers until we find a pointer that references
+itself. Often, to speed up consecutive calls to find, the parent of $x$ is set
+to the parent that was computed by find (this does not only speed up the find
+operation for $x$ but also for elements that reference $x$).
+
+To merge the two sets to which two elements $x$ and $y$ belong to, we first use
+the find operation to obtain their respective roots (if they are the same, we
+are done because then the elements already belong to the same set). Then we
+attach one root to the root of the other using the parent pointers.
+
+\subsection*{Kruskal's Algorithm}
+The union-find data structure can be used to efficiently implement Kruskal's
+algorithm which computes the minimum spanning tree in a graph. It is a greedy
+algorithm which repeatedly finds an edge of the least possible weight that connects
+any two trees in the current forest. In the beginning the forest consists of one tree for every vertex that only contains that vertex.
+
+\begin{algorithm}
+  \SetAlgoLined%
+  \KwResult{Minimum spanning tree of graph $G$ with vertices $G.V$ and edges $G.E$}%
+  $A \gets \emptyset$\;
+  \ForEach{vertex $v$ in $G.V$}{%
+    \textsc{MakeSet}(v)\;%
+  }%
+  \ForEach{edge $(u,v)$ in $G.E$ sorted by increasing weight}{%
+    \If{\normalfont \textsc{FindSet}(u) \, $\neq$ \, \textsc{FindSet}(u)}{%
+      $A \gets A \cup \{(u,v)\}$\;%
+      \textsc{Union}(\textsc{FindSet}(u),\textsc{FindSet}(v))\;
+    }
+  }%
+  \Return{$A$}
+  \caption{Kruskal's algorithm}
+\end{algorithm}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../main"
+%%% End:

@@ -101,7 +101,7 @@ the forward update version of Viterbi's algorithm.
   \KwResult{Shortest path starting from node $s$}%
   topologically sort the vertices of $G$\;%
   \ForEach{vertex $v$ in topological order}{%
-    \ForEach{edge $e=(u,v)$ in the forward star of $v$}{%
+    \ForEach{edge $e=(v,u)$ in the forward star of $v$}{%
       $d(u) = \min(d(u), d(v) + w(e))$\;%
     }%
   }
@@ -135,13 +135,34 @@ to replace the step where we update the distance by
 where $\oplus$ and $\otimes$ are generalised operations of what in our case is
 the minimum and the sum operation.
 
-In turns out that Viterbi's algorithm can only be used for directed acyclic
-graphs, \ie graphs that do not contain any cycles. If the graph does contain
-cycles, a similar algorithm called Dijkstra's algorithm can be used. Note that
-then the graph must not contain any negative edges since this might lead to
-negative cycles which in turn make the notion of shortest path meaningless (the
-shortest path would be given by following the negative cycle infinitely many
-times).
+Note that then the graph must not contain any negative cycles since this makes
+the notion of shortest path meaningless (the shortest path would be given by
+following the negative cycle infinitely many times). Also, Viterbi's algorithm
+can only be used for directed acyclic graphs, \ie graphs that do not contain any
+cycles. If the graph does contain cycles, a similar algorithm called Dijkstra's
+algorithm can be used.
+
+\begin{algorithm}
+  \SetAlgoLined%
+  \KwResult{Shortest path starting from node $s$}%
+  Set distances to all nodes but the starting node to $\infty$\;%
+  Initialise queue $Q \gets V$, prioritised by distance\;%
+  \ForEach{$Q$ is not empty}{%
+    Extract minimum distance vertex $v$ from $Q$\;%
+    \ForEach{edge $e=(v,u)$ in the forward star of $v$ that is still in the
+      queue}{%
+      $d(u) = \min(d(u), d(v) + w(e))$\;%
+    }%
+  }
+  \caption{Dijkstra's algorithm}
+\end{algorithm}
+
+Although Dijkstra's algorithm will not fail when the graph contains negative
+edges (or even a negative cycle) it will not necessarily yield the correct
+result. In practice one would typically also store for each vertex the vertex
+from which we have reached this node so that in the end we can easily
+reconstruct the shortest paths from any node to the starting node by following
+these predecessor pointers beginning from the end node.
 
 \section{Scanline Optimisation/ Stereo Disparity Estimation}%
 \label{sec:scanline}
